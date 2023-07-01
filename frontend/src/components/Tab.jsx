@@ -1,10 +1,24 @@
-export default function Tab() {
+/* eslint-disable react/prop-types */
+export default function Tab(props) {
+  const { id, text, time, deleteTab } = props;
   return (
-    <div className="flex items-center px-2 py-1 rounded-sm my-1 backdrop-blur-sm bg-white/10 hover:bg-black/10 ring-gray-800 hover:ring-1">
-      <div className="px-3 flex-1 "> Tab</div>
+    <div
+      id={id}
+      className="flex items-center mb-3 rounded-md my-1 backdrop-blur-sm hover:bg-white/10 bg-black/10 border-b border-gray-400 dark:border-gray-700 ring-gray-400/20 dark:ring-gray-700 hover:ring-1"
+    >
       <button
         type="button"
-        className="rounded-lg items-center justify-content font-semibold hover:text-slate-300 text-slate-500 text-white p-1"
+        className="hori-scroll px-3 py-1 flex-1 text-left text-gray-700 dark:text-gray-300 whitespace-nowrap overflow-x-scroll h-[38px]"
+      >
+        {text}
+        <span className="text-[0.6rem] text-gray-700 dark:text-gray-500">
+          &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;{time}
+        </span>
+      </button>
+      <button
+        type="button"
+        className="rounded-lg items-center justify-content font-semibold p-2 hover:bg-gray-100 dark:text-slate-400 dark:hover:bg-zinc-300 hover:text-slate-900 text-slate-500 hover:ring-1"
+        onClick={() => deleteTab(id)}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -12,7 +26,7 @@ export default function Tab() {
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="w-6 h-6"
+          className="w-5 h-5"
         >
           <path
             strokeLinecap="round"

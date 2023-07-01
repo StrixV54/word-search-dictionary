@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 export default function Meaning(props) {
   return (
     <div className="pb-2">

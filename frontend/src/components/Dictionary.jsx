@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Results from "./Results.jsx";
@@ -14,6 +15,7 @@ export default function Dictionary(props) {
 
   useEffect(() => {
     Search();
+    console.log("first");
   }, []);
 
   function Search(event) {
@@ -93,7 +95,7 @@ export default function Dictionary(props) {
           className="rounded-full items-center justify-content hover:text-slate-300 text-slate-400 font-semibold ring-2 hover:ring-red-400 flex mx-3 h-11 w-11 px-2"
           onClick={() => {
             props.setVisible(false);
-            props.setInputText("");
+            props.setInputText.current.value = "";
           }}
         >
           <svg

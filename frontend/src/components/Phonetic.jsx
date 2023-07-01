@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 export default function Phonetic(props) {
   return (
     <div className="Phonetic mb-2">

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import Meaning from "./Meaning.jsx";
 import Phonetic from "./Phonetic.jsx";
 
