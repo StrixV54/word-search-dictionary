@@ -1,54 +1,29 @@
 import { useEffect, useRef, useState } from "react";
 import Tab from "./Tab.jsx";
 import { v4 as uuid } from "uuid";
+import PropTypes from "prop-types";
 
-export default function Sidebar() {
-  const [tabList, setTabList] = useState([]);
+Sidebar.propTypes = {
+  noteTab: PropTypes.array.isRequired,
+};
+
+export default function Sidebar(props) {
+  const { activeTab, toggleTab, createNewTab, noteTab, deleteTab } = props;
   const [toggle, setToggle] = useState(false);
   const inputTabRef = useRef(null);
 
-  console.log("Refreshed");
   const handleButtonClick = () => {
-    const tabValue = inputTabRef.current.value;
-    if (tabValue !== "") {
-      console.log(tabValue);
-      const currentTimestamp = new Date().toLocaleString(undefined, {
-        hour: "2-digit",
-        minute: "2-digit",
-        day: "numeric",
-        month: "numeric",
-        year: "numeric",
-        hour12: true,
-      });
-      setTabList((prev) => [
-        {
-          id: uuid(),
-          text: tabValue,
-          time: currentTimestamp,
-        },
-        ...prev,
-      ]);
+    const input = inputTabRef.current.value;
+    if (input.length !== 0) {
+      console.log(input);
+      createNewTab(input);
       inputTabRef.current.value = "";
       setToggle(false);
-      localStorage.setItem("TabList", JSON.stringify(tabList));
     }
   };
-
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("TabList"));
-    if (data) {
-      setTabList(data);
-    }
-  }, []);
 
   const changeToggle = () => {
-    console.log(toggle);
     setToggle((prev) => !prev);
-  };
-
-  const deleteTab = (id) => {
-    const tabListNew = tabList.filter((tab) => tab.id !== id);
-    setTabList(tabListNew);
   };
 
   return (
@@ -115,9 +90,18 @@ export default function Sidebar() {
           </button>
         </div>
       )}
-      {tabList.map((tab) => (
-        <Tab key={tab.id} {...tab} deleteTab={deleteTab} />
-      ))}
+      {noteTab.length > 0 &&
+        noteTab.map((tabData) => (
+          <Tab
+            key={tabData.id}
+            id={tabData.id}
+            text={tabData.text}
+            time={tabData.time}
+            deleteTab={deleteTab}
+            toggleTab={toggleTab}
+            active={tabData.text === activeTab ? true : false}
+          />
+        ))}
     </div>
   );
 }

@@ -3,53 +3,38 @@ import Note from "./Note.jsx";
 import { v4 as uuid } from "uuid";
 import Dictionary from "./Dictionary.jsx";
 
-export default function Notebar() {
+export default function Notebar(props) {
+  const { noteData, saveNoteHandler, deleteNote } = props;
   const inputValueRef = useRef(null);
-  const [wordNotes, setWordNotes] = useState([]);
   const [visible, setVisible] = useState(false);
   const [readOnlyMode, setReadOnlyMode] = useState(false);
 
   const saveHandler = () => {
     const inputValue = inputValueRef.current.value;
     if (inputValue.length != 0) {
-      const currentTimestamp = new Date().toLocaleString(undefined, {
-        hour: "2-digit",
-        minute: "2-digit",
-        day: "numeric",
-        month: "numeric",
-        year: "numeric",
-        hour12: true,
-      });
-      setWordNotes((prevState) => [
-        ...prevState,
-        {
-          id: uuid(),
-          text: inputValue,
-          time: currentTimestamp,
-        },
-      ]);
+      console.log(inputValue);
+      saveNoteHandler(inputValue);
       //clear the textarea
       inputValueRef.current.value = "";
       setVisible(false);
-      localStorage.setItem("WordNotes", JSON.stringify(wordNotes));
     }
   };
 
-  const deleteNote = (id) => {
-    const filteredNotes = wordNotes.filter((note) => note.id !== id);
-    setWordNotes(filteredNotes);
-  };
+  // const deleteNote = (id) => {
+  //   const filteredNotes = wordNotes.filter((note) => note.id !== id);
+  //   setWordNotes(filteredNotes);
+  // };
+
+  // // useEffect(() => {
+  // //   localStorage.setItem("WordNotes", JSON.stringify(wordNotes));
+  // // }, [wordNotes]);
 
   // useEffect(() => {
-  //   localStorage.setItem("WordNotes", JSON.stringify(wordNotes));
-  // }, [wordNotes]);
-
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("WordNotes"));
-    if (data) {
-      setWordNotes(data);
-    }
-  }, []);
+  //   const data = JSON.parse(localStorage.getItem("WordNotes"));
+  //   if (data) {
+  //     setWordNotes(data);
+  //   }
+  // }, []);
 
   const clickSearch = () => {
     const value = inputValueRef.current.value;
@@ -104,18 +89,19 @@ export default function Notebar() {
         </button>
       </div>
       <div className="m-2 py-2 grid grid-flow-row lg:grid-cols-4 md:grid-cols-3 grid-rows-2 gap-3 sm:grid-cols-2">
-        {wordNotes.map((note) => (
-          <Note
-            key={note.id}
-            id={note.id}
-            text={note.text}
-            time={note.time}
-            deleteNote={deleteNote}
-            searchText={clickReadSearch}
-          />
-        ))}
+        {noteData.length > 0 &&
+          noteData.map((note) => (
+            <Note
+              key={note.id}
+              id={note.id}
+              text={note.text}
+              time={note.time}
+              deleteNote={deleteNote}
+              searchText={clickReadSearch}
+            />
+          ))}
       </div>
-      {visible ? (
+      {visible && (
         <Dictionary
           saveHandler={saveHandler}
           text={inputValueRef.current.value}
@@ -123,8 +109,6 @@ export default function Notebar() {
           readMode={readOnlyMode}
           setInputText={inputValueRef}
         />
-      ) : (
-        ""
       )}
     </div>
   );

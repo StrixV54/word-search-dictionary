@@ -5,11 +5,12 @@ import Footer from "./components/Footer.jsx";
 import Header from "./components/Header.jsx";
 import backgroundDark from "./assets/bgDark.jpg";
 import backgroundLight from "./assets/bgLight.jpg";
-import { useState, useEffect, createContext, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { SwitchContext } from "./context/SwitchTheme.jsx";
+import { v4 as uuid } from "uuid";
 
-const getCurrentTime = () => {
-  new Date().toLocaleString(undefined, {
+function App() {
+  const getCurrentTime = new Date().toLocaleString(undefined, {
     hour: "2-digit",
     minute: "2-digit",
     day: "numeric",
@@ -17,65 +18,92 @@ const getCurrentTime = () => {
     year: "numeric",
     hour12: true,
   });
-};
-
-function App() {
   const [activeTab, setActiveTab] = useState(null);
-  const [noteTab, setNoteab] = useState([]);
+  const [noteTab, setNoteTab] = useState([]);
   const [noteData, setNoteData] = useState([]);
   const [isDarkMode, handleToggle] = useContext(SwitchContext);
 
+  console.log("ActiveTab" + activeTab);
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("WordNotes"));
+    const data = JSON.parse(localStorage.getItem("TabsData"));
     if (data) {
       setNoteTab(data);
+      toggleTab(data[0]);
+      const data1 = JSON.parse(localStorage.getItem(data[0]));
+      if (data1) setNoteData(data1);
+      else setNoteData([]);
+    } else {
+      setNoteTab([]);
+      setActiveTab(null);
+      setNoteData([]);
     }
-  }, [noteTab]);
+  }, []);
 
-  const saveTabHandler = () => {
-    if (inputValue.length != 0) {
-      const currentTimestamp = getCurrentTime;
-      setNoteTab((prevState) => {
-        prevState = prevState.filter((note) => note.text !== activeTab);
-        return [
-          ...prevState,
-          {
-            id: uuid(),
-            tab: noteTab,
-            text: noteData,
-            time: currentTimestamp,
-          },
-        ];
-      });
-      localStorage.setItem("WordNotes", JSON.stringify(wordNotes));
+  useEffect(() => {
+    if (activeTab) localStorage.setItem(activeTab, JSON.stringify(noteData));
+    localStorage.setItem("TabsData", JSON.stringify(noteTab));
+  }, [noteTab, noteData]);
+
+  const toggleTab = (inputTab) => {
+    if (inputTab?.length === 0) console.log("Empty tab");
+    setActiveTab(inputTab);
+    const data = JSON.parse(localStorage.getItem(inputTab));
+    if (data) {
+      setNoteData(data);
+    } else {
+      setNoteData([]);
     }
   };
 
-  const saveNoteHandler = (input) => {
-    const inputValue = input;
-    if (inputValue.length != 0) {
-      const currentTimestamp = getCurrentTime;
-      setNoteData((prevState) => [
+  const saveTabHandler = (inputTabName) => {
+    const currentTimestamp = getCurrentTime;
+    const inputValue = inputTabName;
+    setNoteTab((prevState) => {
+      return [
         ...prevState,
         {
           id: uuid(),
           text: inputValue,
           time: currentTimestamp,
         },
+      ];
+    });
+    setActiveTab(inputValue);
+  };
+
+  const saveNoteHandler = (input) => {
+    const inputValue = input;
+    const currentTimestamp = getCurrentTime;
+    if (
+      inputValue?.length !== 0 &&
+      noteTab?.length !== 0 &&
+      activeTab !== null
+    ) {
+      setNoteData((prev) => [
+        ...prev,
+        {
+          id: uuid(),
+          text: inputValue,
+          time: currentTimestamp,
+        },
       ]);
-      saveTabHandler();
+    } else {
+      console.log("Something is empty");
     }
   };
 
   const deleteTab = (id) => {
     const filteredNotes = noteTab.filter((note) => note.id !== id);
+    const exactNote = noteTab.filter((note) => note.id == id);
+    localStorage.setItem("TabsData", JSON.stringify(filteredNotes));
+    localStorage.removeItem(exactNote[0].text);
     setNoteTab(filteredNotes);
   };
 
   const deleteNote = (id) => {
     const filteredNotes = noteData.filter((note) => note.id !== id);
+    localStorage.setItem(activeTab, JSON.stringify(filteredNotes));
     setNoteData(filteredNotes);
-    saveTabHandler();
   };
 
   const myStyle = {
@@ -89,9 +117,21 @@ function App() {
     <div className="App w-full h-full flex flex-col relative" style={myStyle}>
       <Header />
       <div className="flex mb-6 h-full relative">
-        <Sidebar />
+        <Sidebar
+          toggleTab={toggleTab}
+          setActiveTab={setActiveTab}
+          activeTab={activeTab}
+          setNoteTab={setNoteTab}
+          createNewTab={saveTabHandler}
+          noteTab={noteTab}
+          deleteTab={deleteTab}
+        />
         <div className="w-1 dark:bg-white/5 bg-black/5 rounded-lg mb-3"></div>
-        <Notebar />
+        <Notebar
+          noteData={noteData}
+          saveNoteHandler={saveNoteHandler}
+          deleteNote={deleteNote}
+        />
       </div>
       <Footer />
     </div>

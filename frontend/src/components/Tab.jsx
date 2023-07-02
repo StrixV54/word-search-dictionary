@@ -1,14 +1,20 @@
 /* eslint-disable react/prop-types */
 export default function Tab(props) {
-  const { id, text, time, deleteTab } = props;
+  const { id, text, active, time, deleteTab, toggleTab } = props;
   return (
     <div
       id={id}
-      className="flex items-center mb-3 rounded-md my-1 backdrop-blur-sm hover:bg-white/10 bg-black/10 border-b border-gray-400 dark:border-gray-700 ring-gray-400/20 dark:ring-gray-700 hover:ring-1"
+      className={`flex items-center mb-3 rounded-md my-1 backdrop-blur-sm hover:bg-white/10  bg-black/10 border-b border-gray-400 dark:border-gray-700 ring-gray-400/20 dark:ring-gray-700 hover:ring-1
+        ${
+          active
+            ? "ring-[#1e416984] dark:ring-[#1e4169] ring-2 border-none"
+            : ""
+        }`}
     >
       <button
         type="button"
         className="hori-scroll px-3 py-1 flex-1 text-left text-gray-700 dark:text-gray-300 whitespace-nowrap overflow-x-scroll h-[38px]"
+        onClick={() => toggleTab(text)}
       >
         {text}
         <span className="text-[0.6rem] text-gray-700 dark:text-gray-500">
