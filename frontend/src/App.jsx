@@ -23,25 +23,24 @@ function App() {
   const [noteData, setNoteData] = useState([]);
   const [isDarkMode, handleToggle] = useContext(SwitchContext);
 
-  console.log("ActiveTab" + activeTab);
+  console.log("ActiveTab : " + activeTab);
+
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem("TabsData"));
     if (data) {
       setNoteTab(data);
-      toggleTab(data[0]);
-      const data1 = JSON.parse(localStorage.getItem(data[0]));
+      const noteTab = data[0]?.text;
+      toggleTab(noteTab);
+      const data1 = JSON.parse(localStorage.getItem(noteTab));
       if (data1) setNoteData(data1);
-      else setNoteData([]);
-    } else {
-      setNoteTab([]);
-      setActiveTab(null);
-      setNoteData([]);
     }
   }, []);
 
   useEffect(() => {
-    if (activeTab) localStorage.setItem(activeTab, JSON.stringify(noteData));
-    localStorage.setItem("TabsData", JSON.stringify(noteTab));
+    if (noteTab.length !== 0) {
+      if (activeTab) localStorage.setItem(activeTab, JSON.stringify(noteData));
+      localStorage.setItem("TabsData", JSON.stringify(noteTab));
+    }
   }, [noteTab, noteData]);
 
   const toggleTab = (inputTab) => {

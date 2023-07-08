@@ -1,7 +1,8 @@
 const actions = {
-     ADD_TODO_ITEM: "ADD_TODO_ITEM",
-     REMOVE_TODO_ITEM: "REMOVE_TODO_ITEM",
-     TOGGLE_COMPLETED: "TOGGLE_COMPLETED"
+     ADD_ITEM: "ADD_ITEM",
+     REMOVE_ITEM: "REMOVE_ITEM",
+     TOGGLE_TAB:
+     REMOVE_TAB:
 };
 
 export default actions;

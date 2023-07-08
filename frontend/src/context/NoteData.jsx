@@ -1,4 +1,6 @@
 import { createContext, useEffect, useState } from "react";
+import { initialState, reducer } from "../components/reducer/reducer.jsx";
+import { initialState, reducer } from "../components/reducer/actions.jsx";
 
 const NoteContext = createContext();
 
@@ -28,17 +30,8 @@ const NoteProvider = ({ children }) => {
       dispatch({ type: actions.TOGGLE_COMPLETED, todoItemId });
     },
   };
-  // useEffect(() => {
-  //   localStorage.setItem("WordNotes", JSON.stringify(wordNotes));
-  // }, [wordNotes]);
 
-  return (
-    <NoteContext.Provider
-      value={[activeTab, setActiveTab, noteTab, setNoteTab, noteData]}
-    >
-      {children}
-    </NoteContext.Provider>
-  );
+  return <NoteContext.Provider value={value}>{children}</NoteContext.Provider>;
 };
 
 export { SwitchContext, SwitchProvider };
