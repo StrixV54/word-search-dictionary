@@ -4,10 +4,10 @@ export default function Tab(props) {
   return (
     <div
       id={id}
-      className={`flex items-center mb-3 rounded-md my-1 backdrop-blur-sm hover:bg-white/10  bg-black/10 border-b border-gray-400 dark:border-gray-700 ring-gray-400/20 dark:ring-gray-700 hover:ring-1
+      className={`flex items-center mb-3 rounded-md my-1 backdrop-blur-sm hover:bg-black/20 hover:dark:bg-white/10 bg-black/10 border-b border-gray-400 dark:border-gray-700 ring-gray-400/20 dark:ring-gray-700
         ${
           active
-            ? "ring-[#1e416984] dark:ring-[#1e4169] ring-2 border-none"
+            ? "ring-[#3179aad5] bg-black/10  dark:ring-[#2561a5bd] ring-2 border-none"
             : ""
         }`}
     >
