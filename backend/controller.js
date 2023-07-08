@@ -1,99 +1,60 @@
-import Product from "../models/Product.js";
-import ProductStat from "../models/ProductStat.js";
-import User from "../models/User.js";
-import Transaction from "../models/Transaction.js";
-import getCountryIso3 from "country-iso-2-to-3";
+import NoteModel from "./model.js";
+import google from "googlethis";
 
-export const getProducts = async (req, res) => {
+const options = {
+  page: 0,
+  safe: false, // Safe Search
+  parse_ads: true, // If set to true sponsored results will be parsed
+  additional_params: {
+    // add additional parameters here, see https://moz.com/blog/the-ultimate-guide-to-the-google-search-parameters and https://www.seoquake.com/blog/google-search-param/
+    hl: "en",
+  },
+};
+
+export const getNotes = async (req, res) => {
   try {
-    const products = await Product.find();
-
-    const productsWithStats = await Promise.all(
-      products.map(async (product) => {
-        const stat = await ProductStat.find({
-          productId: product._id,
-        });
-        return {
-          ...product._doc,
-          stat,
-        };
-      })
-    );
-
-    res.status(200).json(productsWithStats);
+    const products = await NoteModel.find();
+    res.status(200).json(products);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
 };
 
-export const getCustomers = async (req, res) => {
+export const getSearchDict = async (req, res) => {
   try {
-    const customers = await User.find({ role: "user" }).select("-password");
-    res.status(200).json(customers);
+    const data = "define " + req.params.text;
+    const response = await google.search(data, options);
+    res.status(200).json(`${JSON.stringify(response)}`);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
 };
 
-export const getTransactions = async (req, res) => {
+export const createNote = async (req, res) => {
   try {
-    // sort should look like this: { "field": "userId", "sort": "desc"}
-    const { page = 1, pageSize = 20, sort = null, search = "" } = req.query;
-
-    // formatted sort should look like { userId: -1 }
-    const generateSort = () => {
-      const sortParsed = JSON.parse(sort);
-      const sortFormatted = {
-        [sortParsed.field]: (sortParsed.sort = "asc" ? 1 : -1),
-      };
-
-      return sortFormatted;
-    };
-    const sortFormatted = Boolean(sort) ? generateSort() : {};
-
-    const transactions = await Transaction.find({
-      $or: [
-        { cost: { $regex: new RegExp(search, "i") } },
-        { userId: { $regex: new RegExp(search, "i") } },
-      ],
-    })
-      .sort(sortFormatted)
-      .skip(page * pageSize)
-      .limit(pageSize);
-
-    const total = await Transaction.countDocuments({
-      name: { $regex: search, $options: "i" },
+    const { body } = req;
+    console.log(body);
+    const created = await NoteModel.create({
+      id: body.id,
+      text: body.text,
+      color: body.color,
+      time: body.time,
     });
-
-    res.status(200).json({
-      transactions,
-      total,
-    });
+    res.status(200).json({ message: "Created successfully", id: created._id });
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
 };
 
-export const getGeography = async (req, res) => {
+export const deleteNote = async (req, res) => {
   try {
-    const users = await User.find();
-
-    const mappedLocations = users.reduce((acc, { country }) => {
-      const countryISO3 = getCountryIso3(country);
-      if (!acc[countryISO3]) {
-        acc[countryISO3] = 0;
-      }
-      acc[countryISO3]++;
-      return acc;
-    }, {});
-
-    const formattedLocations = Object.entries(mappedLocations).map(
-      ([country, count]) => {
-        return { id: country, value: count };
-      }
-    );
-
-    res.status(200).json(formattedLocations);
+    const noteData = await NoteModel.findOne({
+      id: req.params.id,
+    });
+    const deleted = await NoteModel.deleteOne({
+      id: req.params.id,
+    });
+    res.status(200).json({ deleted, noteData });
   } catch (error) {
     res.status(404).json({ message: error.message });
   }

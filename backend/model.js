@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const ProductSchema = new mongoose.Schema(
+const NoteSchema = new mongoose.Schema(
   {
     text: String,
     id: Number,
@@ -10,5 +10,5 @@ const ProductSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const NoteModel = mongoose.model("Product", ProductSchema);
+const NoteModel = mongoose.model("TabNote", NoteSchema);
 export default NoteModel;
