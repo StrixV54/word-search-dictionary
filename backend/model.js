@@ -1,14 +1,16 @@
 import mongoose from "mongoose";
 
-const NoteSchema = new mongoose.Schema(
+const TabSchema = new mongoose.Schema(
   {
-    text: String,
+    tabname: String,
     id: Number,
+    notelist: Array,
     time: String,
     color: String,
   },
   { timestamps: true }
 );
 
-const NoteModel = mongoose.model("TabNote", NoteSchema);
-export default NoteModel;
+const TabModel = mongoose.model("TabList", TabSchema);
+
+export default TabModel;

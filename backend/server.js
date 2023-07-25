@@ -6,7 +6,6 @@ import dotenv from "dotenv";
 import helmet from "helmet";
 import morgan from "morgan";
 import routes from "./route.js";
-import noteModel from "./model.js";
 
 /* CONFIGURATION */
 dotenv.config();

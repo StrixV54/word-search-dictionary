@@ -8,9 +8,9 @@ export default function Dictionary(props) {
   let [results, setResults] = useState(null);
   let [errorOccured, setErrorOccured] = useState(null);
 
-  function handleDictionaryResponse(response) {
-    // console.log(response);
-    setResults(response.data[0]);
+  const handleDictionaryResponse = (response) => {
+    console.log(response);
+    setResults(response);
   }
 
   useEffect(() => {
@@ -18,10 +18,9 @@ export default function Dictionary(props) {
     console.log("first");
   }, []);
 
-  function Search(event) {
+  const Search = async (event) => {
     event?.preventDefault();
-    let apiUrl = `https://api.dictionaryapi.dev/api/v2/entries/en_US/${keyword}`;
-    console.log(keyword);
+    let apiUrl = `http://localhost:5000/dict/${keyword}`;
     axios
       .get(apiUrl, { headers: { "Content-Type": "" } })
       .then((res) => {
