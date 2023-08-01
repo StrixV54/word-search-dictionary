@@ -7,130 +7,69 @@ import backgroundDark from "./assets/bgDark.jpg";
 import backgroundLight from "./assets/bgLight.jpg";
 import { useState, useEffect, useContext } from "react";
 import { SwitchContext } from "./context/SwitchTheme.jsx";
-import { v4 as uuid } from "uuid";
+import actions from "./reducer/actions.jsx";
+import { useDispatch, useSelector } from "react-redux";
+import { getCurrentTime, getLocalHostURL, uuid } from "./utils/helper.jsx";
+import axios from "axios";
 
 function App() {
-  const getCurrentTime = new Date().toLocaleString(undefined, {
-    hour: "2-digit",
-    minute: "2-digit",
-    day: "numeric",
-    month: "numeric",
-    year: "numeric",
-    hour12: true,
-  });
-  const [activeTab, setActiveTab] = useState(null);
-  const [noteTab, setNoteTab] = useState([]);
-  const [noteData, setNoteData] = useState([]);
   const [isDarkMode, handleToggle] = useContext(SwitchContext);
+  const noteData = useSelector((state) => state.notebox.noteList);
+  const tabData = useSelector((state) => state.sidetab.tabList);
+  const activeTab = useSelector((state) => state.sidetab.activeTab);
+  const dispatch = useDispatch();
 
-  console.log("ActiveTab : " + activeTab);
+  const getTabs = async () => {
+    try {
+      const { data } = await axios.get(`${getLocalHostURL}/gettabs`);
+      console.log(data);
+    } catch (error) {
+      throw new error();
+    }
+  };
+
+  const getNotes = async (tabName) => {
+    try {
+      const { data } = await axios.get(`${getLocalHostURL}/getnotes/${tabName}`);
+      console.log(data);
+    } catch (error) {
+      throw new error();
+    }
+  };
 
   useEffect(() => {
+    console.log("useEff");
     const data = JSON.parse(localStorage.getItem("TabsData"));
     if (data) {
-      setNoteTab(data);
-      const noteTab = data[0]?.text;
-      toggleTab(noteTab);
-      const data1 = JSON.parse(localStorage.getItem(noteTab));
-      if (data1) setNoteData(data1);
+      dispatch({ type: actions.FETCH_TABS, newList: [...data] });
+      const currentTab = data[0].text;
+      dispatch({ type: actions.ACTIVE_TAB, text: currentTab });
+      const data1 = JSON.parse(localStorage.getItem(currentTab));
+      if (data1) dispatch({ type: actions.FETCH_ITEMS, newList: [...data1] });
     }
   }, []);
 
   useEffect(() => {
-    if (noteTab.length !== 0) {
+    if (tabData?.length !== 0) {
       if (activeTab) localStorage.setItem(activeTab, JSON.stringify(noteData));
-      localStorage.setItem("TabsData", JSON.stringify(noteTab));
+      localStorage.setItem("TabsData", JSON.stringify(tabData));
     }
-  }, [noteTab, noteData]);
+  }, [noteData, tabData]);
 
-  const toggleTab = (inputTab) => {
-    if (inputTab?.length === 0) console.log("Empty tab");
-    setActiveTab(inputTab);
-    const data = JSON.parse(localStorage.getItem(inputTab));
-    if (data) {
-      setNoteData(data);
-    } else {
-      setNoteData([]);
-    }
-  };
-
-  const saveTabHandler = (inputTabName) => {
-    const currentTimestamp = getCurrentTime;
-    const inputValue = inputTabName;
-    setNoteTab((prevState) => {
-      return [
-        ...prevState,
-        {
-          id: uuid(),
-          text: inputValue,
-          time: currentTimestamp,
-        },
-      ];
-    });
-    setActiveTab(inputValue);
-  };
-
-  const saveNoteHandler = (input) => {
-    const inputValue = input;
-    const currentTimestamp = getCurrentTime;
-    if (
-      inputValue?.length !== 0 &&
-      noteTab?.length !== 0 &&
-      activeTab !== null
-    ) {
-      setNoteData((prev) => [
-        ...prev,
-        {
-          id: uuid(),
-          text: inputValue,
-          time: currentTimestamp,
-        },
-      ]);
-    } else {
-      console.log("Something is empty");
-    }
-  };
-
-  const deleteTab = (id) => {
-    const filteredNotes = noteTab.filter((note) => note.id !== id);
-    const exactNote = noteTab.filter((note) => note.id == id);
-    localStorage.setItem("TabsData", JSON.stringify(filteredNotes));
-    localStorage.removeItem(exactNote[0].text);
-    setNoteTab(filteredNotes);
-  };
-
-  const deleteNote = (id) => {
-    const filteredNotes = noteData.filter((note) => note.id !== id);
-    localStorage.setItem(activeTab, JSON.stringify(filteredNotes));
-    setNoteData(filteredNotes);
-  };
-
-  const myStyle = {
-    backgroundImage: `url(${isDarkMode ? backgroundDark : backgroundLight})`,
-    height: "100vh",
-    backgroundSize: "cover",
-    backgroundRepeat: "no-repeat",
-  };
+  // const myStyle = {
+  //   backgroundImage: `url(${isDarkMode ? backgroundDark : backgroundLight})`,
+  //   height: "100vh",
+  //   backgroundSize: "cover",
+  //   backgroundRepeat: "no-repeat",
+  // };
 
   return (
-    <div className="App w-full h-full flex flex-col relative" style={myStyle}>
+    <div className="App h-full w-full flex flex-col bg-[#f9f9f9] dark:bg-[#1a1c21]">
       <Header />
-      <div className="flex mb-6 h-full relative">
-        <Sidebar
-          toggleTab={toggleTab}
-          setActiveTab={setActiveTab}
-          activeTab={activeTab}
-          setNoteTab={setNoteTab}
-          createNewTab={saveTabHandler}
-          noteTab={noteTab}
-          deleteTab={deleteTab}
-        />
-        <div className="w-1 dark:bg-white/5 bg-black/5 rounded-lg mb-3"></div>
-        <Notebar
-          noteData={noteData}
-          saveNoteHandler={saveNoteHandler}
-          deleteNote={deleteNote}
-        />
+      <div className="flex w-full h-full f-edge overflow-hidden">
+        <Sidebar />
+        <div className="w-1 dark:bg-white/5 bg-black/5 rounded-lg mb-3 md:block hidden"></div>
+        <Notebar />
       </div>
       <Footer />
     </div>

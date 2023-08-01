@@ -120,7 +120,13 @@ export const deleteNote = async (req, res) => {
         },
       }
     );
-    res.status(200).json({ message: `Note deleted successfully`, deletedNoteData, noteData });
+    res
+      .status(200)
+      .json({
+        message: `Note deleted successfully`,
+        deletedNoteData,
+        noteData,
+      });
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
@@ -134,7 +140,9 @@ export const deleteTab = async (req, res) => {
     const deleted = await Model.deleteOne({
       tabname: req.params.tab,
     });
-    res.status(200).json({ message: `Tab deleted successfully`, deleted, noteData });
+    res
+      .status(200)
+      .json({ message: `Tab deleted successfully`, deleted, noteData });
   } catch (error) {
     res.status(404).json({ message: error.message });
   }

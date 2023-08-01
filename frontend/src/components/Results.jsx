@@ -13,12 +13,12 @@ export default function Results(props) {
               <div key={defination.description}>
                 <p className="p-2">
                   <strong>Definition: </strong>
-                  <span className="text-green-400">
+                  <span className="text-[#228316] dark:text-[#2ba21c]">
                     {defination.description}
                   </span>
-                  <br/>
+                  <br />
                   <strong>Website: </strong>
-                  <em>{defination.url}</em>
+                  <em className="text-[#1b4295] dark:text-[#2057ce]">{defination.url}</em>
                 </p>
               </div>
             );

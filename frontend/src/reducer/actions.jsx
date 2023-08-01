@@ -2,8 +2,10 @@ const actions = {
   ADD_ITEM: "ADD_ITEM",
   ADD_TAB: "ADD_TAB",
   REMOVE_ITEM: "REMOVE_ITEM",
-  TOGGLE_TAB: "TOGGLE_TAB",
+  FETCH_ITEMS: "FETCH_ITEMS",
   REMOVE_TAB: "REMOVE_TAB",
+  ACTIVE_TAB: "ACTIVE_TAB",
+  FETCH_TABS: "FETCH_TABS",
 };
 
 export default actions;

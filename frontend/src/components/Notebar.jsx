@@ -1,40 +1,34 @@
 import { useState, useEffect, useRef } from "react";
 import Note from "./Note.jsx";
-import { v4 as uuid } from "uuid";
 import Dictionary from "./Dictionary.jsx";
+import actions from "../reducer/actions.jsx";
+import { useDispatch, useSelector } from "react-redux";
+import { getCurrentTime, uuid } from "../utils/helper.jsx";
 
 export default function Notebar(props) {
-  const { noteData, saveNoteHandler, deleteNote } = props;
+  // const { noteData, saveNoteHandler, deleteNote } = props;
   const inputValueRef = useRef(null);
   const [visible, setVisible] = useState(false);
   const [readOnlyMode, setReadOnlyMode] = useState(false);
+  const noteData = useSelector((state) => state.notebox.noteList);
+  const dispatch = useDispatch();
 
   const saveHandler = () => {
     const inputValue = inputValueRef.current.value;
     if (inputValue.length != 0) {
-      console.log(inputValue);
-      saveNoteHandler(inputValue);
+      // console.log(inputValue);
+      // saveNoteHandler(inputValue);
+      dispatch({
+        type: actions.ADD_ITEM,
+        id: uuid(),
+        text: inputValue,
+        time: getCurrentTime,
+      });
       //clear the textarea
       inputValueRef.current.value = "";
       setVisible(false);
     }
   };
-
-  // const deleteNote = (id) => {
-  //   const filteredNotes = wordNotes.filter((note) => note.id !== id);
-  //   setWordNotes(filteredNotes);
-  // };
-
-  // // useEffect(() => {
-  // //   localStorage.setItem("WordNotes", JSON.stringify(wordNotes));
-  // // }, [wordNotes]);
-
-  // useEffect(() => {
-  //   const data = JSON.parse(localStorage.getItem("WordNotes"));
-  //   if (data) {
-  //     setWordNotes(data);
-  //   }
-  // }, []);
 
   const clickSearch = () => {
     const value = inputValueRef.current.value;
@@ -54,11 +48,11 @@ export default function Notebar(props) {
   };
 
   return (
-    <div className="inline-block flex-1 rounded-md ml-3 mr-4 mb-5 p-2 relative dark:bg-[#060f1a] bg-[#b5b3b1] dark:ring-gray-900 dark:ring-1 backdrop-blur-lg">
-      <div className="flex items-center justify-center mt-2">
+    <div className="h-full w-full flex-1 rounded-md ml-3 mr-4 mb-5 p-2 relative">
+      <div className="flex items-center justify-center mt-2 mb-4">
         <input
-          className="focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none flex-1 text-sm leading-6 dark:text-slate-400 text-slate-300 
-         dark:placeholder-slate-400 placeholder-gray-400 rounded-full py-2 pl-5 shadow-sm bg-black/40 border mr-3 ml-2 border-[#6e6058] dark:border-gray-600"
+          className="focus:ring-1 focus:ring-neutral-600 focus:outline-none appearance-none flex-1 text-sm leading-6 dark:text-slate-400 text-white
+         dark:placeholder-slate-500 placeholder-gray-200 rounded-full py-2 pl-5 shadow-sm bg-black/40 border mr-3 ml-2 border-[#6e6058] dark:border-gray-600 dark:bg-[#1c1e24]"
           type="text"
           aria-label="Web Search/Add Word"
           placeholder="Web Search/Add Word"
@@ -69,7 +63,8 @@ export default function Notebar(props) {
         />
         <button
           type="Button"
-          className="h-10 w-10 hover:bg-emerald-600 flex items-center rounded-full bg-blue-500 justify-center shadow-sm mr-2"
+          className="h-10 w-10 hover:bg-[#7d74e4] flex items-center rounded-full bg-[#9d97de] 
+           justify-center shadow-sm mr-2"
           onClick={clickSearch}
         >
           <svg
@@ -78,7 +73,7 @@ export default function Notebar(props) {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-6 h-6"
+            className="w-5 h-5"
           >
             <path
               strokeLinecap="round"
@@ -88,7 +83,8 @@ export default function Notebar(props) {
           </svg>
         </button>
       </div>
-      <div className="m-2 py-2 grid grid-flow-row lg:grid-cols-4 md:grid-cols-3 grid-rows-2 gap-3 sm:grid-cols-2">
+      {/* <div className="h-1 dark:bg-white/10 bg-black/10 rounded-lg md:block w-full"></div> */}
+      <div className="m-2 py-2 grid grid-flow-row md:grid-cols-3 grid-cols-2 grid-rows-2 gap-4 ">
         {noteData.length > 0 &&
           noteData.map((note) => (
             <Note
@@ -96,7 +92,7 @@ export default function Notebar(props) {
               id={note.id}
               text={note.text}
               time={note.time}
-              deleteNote={deleteNote}
+              // deleteNote={deleteNote}
               searchText={clickReadSearch}
             />
           ))}

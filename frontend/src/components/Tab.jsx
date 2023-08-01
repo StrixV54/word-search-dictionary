@@ -1,30 +1,53 @@
+import { useDispatch, useSelector } from "react-redux";
+import actions from "../reducer/actions.jsx";
+
 /* eslint-disable react/prop-types */
 export default function Tab(props) {
-  const { id, text, active, time, deleteTab, toggleTab } = props;
+  const { id, text, time, input } = props;
+
+  const dispatch = useDispatch();
+  const isActive = text === useSelector((state) => state.sidetab.activeTab);
+
+  const deleteCurrentTab = (id) =>
+    dispatch({ type: actions.REMOVE_TAB, id: id });
+
+  const toggleTab = (input) => {
+    if (input?.length === 0) console.log("Empty tab");
+    dispatch({ type: actions.ACTIVE_TAB, text: text });
+    const data = JSON.parse(localStorage.getItem(input));
+    if (data) {
+      dispatch({ type: actions.FETCH_ITEMS, newList: [...data] });
+    } else {
+      dispatch({ type: actions.FETCH_ITEMS, newList: [] });
+    }
+  };
+
   return (
     <div
       id={id}
-      className={`flex items-center mb-3 rounded-md my-1 backdrop-blur-sm hover:bg-black/20 hover:dark:bg-white/10 bg-black/10 border-b border-gray-400 dark:border-gray-700 ring-gray-400/20 dark:ring-gray-700
+      className={`flex items-center mb-3 rounded-md mt-1
         ${
-          active
-            ? "ring-[#3179aad5] bg-black/10  dark:ring-[#2561a5bd] ring-2 border-none"
-            : ""
-        }`}
+          isActive
+            ? "hover:bg-black/20 hover:border-black/20 hover:dark:bg-white/10 bg-[#e7e7e7] dark:bg-[#28282e] border-[2.5px] border-[#9e9e9e] dark:border-[#707073]"
+            : " hover:bg-black/20 hover:dark:bg-white/10 bg-[#e7e7e7] dark:bg-[#28282e] border-[2.5px] border-[#e7e7e7] dark:border-[#28282e]"
+        }
+        `}
     >
       <button
         type="button"
-        className="hori-scroll px-3 py-1 flex-1 text-left text-gray-700 dark:text-gray-300 whitespace-nowrap overflow-x-scroll h-[38px]"
+        className="hori-scroll px-3 py-1 flex-1 flex items-center justify-between text-gray-700 dark:text-gray-300 text-sm
+        whitespace-nowrap overflow-x-scroll"
         onClick={() => toggleTab(text)}
       >
         {text}
-        <span className="text-[0.6rem] text-gray-700 dark:text-gray-500">
+        <span className="text-[9px] text-gray-500 dark:text-gray-500">
           &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;{time}
         </span>
       </button>
       <button
         type="button"
-        className="rounded-lg items-center justify-content font-semibold p-2 hover:bg-gray-100 dark:text-slate-400 dark:hover:bg-zinc-300 hover:text-slate-900 text-slate-500 hover:ring-1"
-        onClick={() => deleteTab(id)}
+        className="rounded-lg items-center justify-content font-semibold p-2 hover:bg-gray-100 dark:text-slate-600 dark:hover:bg-zinc-300 hover:text-slate-900 text-slate-500 hover:ring-1"
+        onClick={() => deleteCurrentTab(id)}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -41,6 +64,8 @@ export default function Tab(props) {
           />
         </svg>
       </button>
+      {/* <span className="h-[39px] w-2 rounded-e-[5px] bg-[#66574a] dark:bg-[#42525f]" />
+          <span className="h-3 w-3 rounded-full bg-[#5f4329] dark:bg-[#3079b8] absolute right-0 translate-x-6" /> */}
     </div>
   );
 }
