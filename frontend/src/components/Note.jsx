@@ -2,13 +2,30 @@ import actions from "../reducer/actions.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { IoSearchCircle } from "react-icons/io5";
 import { AiFillMinusCircle } from "react-icons/ai";
+import { getLocalHostURL } from "../utils/helper.jsx";
+import axios from "axios";
 
 export default function Note(props) {
-  const dispatch = useDispatch();
-  const deleteCurrentNote = (id) =>
-    dispatch({ type: actions.REMOVE_ITEM, id: id });
   // eslint-disable-next-line react/prop-types
   const { text, id, time, searchText } = props;
+  const dispatch = useDispatch();
+  const activeTab = useSelector((state) => state.sidetab.activeTab);
+  const deleteCurrentNote = (id) => {
+    dispatch({ type: actions.REMOVE_ITEM, id: id });
+    deleteNote(activeTab, id);
+  };
+
+  const deleteNote = async (tabName, id) => {
+    try {
+      const { data } = await axios.delete(
+        `${getLocalHostURL}/deletenote/${tabName}/${id}`,
+      );
+      // console.log(data);
+      return data;
+    } catch (error) {
+      console.log("Error in connecting and deleting Data");
+    }
+  };
 
   return (
     <div className="bg-[#dadada] dark:bg-[#28282e] flex flex-col rounded-xl w-full border-0 border-slate-500">
@@ -19,7 +36,7 @@ export default function Note(props) {
           onClick={() => deleteCurrentNote(id)}
           title="Delete Note"
         >
-          <AiFillMinusCircle />
+          <AiFillMinusCircle className="h-6 w-6 md:h-4 md:w-4" />
         </button>
         <button
           type="button"
@@ -29,7 +46,7 @@ export default function Note(props) {
           }}
           title="Search Web"
         >
-          <IoSearchCircle className="h-5 w-5" />
+          <IoSearchCircle className="h-8 w-8 md:h-5 md:w-5" />
         </button>
       </div>
       <div className="hori-scroll px-3 py-1 flex-1 w-full text-zinc-900 dark:text-gray-300 whitespace-nowrap overflow-x-scroll">

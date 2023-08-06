@@ -1,4 +1,5 @@
-import Model from "./model.js";
+import expressAsyncHandler from "express-async-handler";
+import TabModel from "../models/appModel.js";
 import google from "googlethis";
 
 const options = {
@@ -11,10 +12,10 @@ const options = {
   },
 };
 
-export const getNotes = async (req, res) => {
+export const getNotes = expressAsyncHandler(async (req, res) => {
   try {
     const { tab } = req.params;
-    const tabNote = await Model.findOne({
+    const tabNote = await TabModel.findOne({
       tabname: tab,
     });
     const note = await tabNote?.notelist;
@@ -22,18 +23,18 @@ export const getNotes = async (req, res) => {
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
-};
+});
 
-export const getTabs = async (req, res) => {
+export const getTabs = expressAsyncHandler(async (req, res) => {
   try {
     const products = await Model.find();
     res.status(200).json(products);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
-};
+});
 
-export const getSearchDict = async (req, res) => {
+export const getSearchDict = expressAsyncHandler(async (req, res) => {
   try {
     const data = "define " + req.params.text;
     const response = await google.search(data, options);
@@ -41,9 +42,9 @@ export const getSearchDict = async (req, res) => {
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
-};
+});
 
-export const createNote = async (req, res) => {
+export const createNote = expressAsyncHandler(async (req, res) => {
   try {
     const noteBody = {
       id: req.body.id,
@@ -73,9 +74,9 @@ export const createNote = async (req, res) => {
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
-};
+});
 
-export const createTab = async (req, res) => {
+export const createTab = expressAsyncHandler(async (req, res) => {
   try {
     const { body } = req;
     console.log(body);
@@ -103,9 +104,9 @@ export const createTab = async (req, res) => {
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
-};
+});
 
-export const deleteNote = async (req, res) => {
+export const deleteNote = expressAsyncHandler(async (req, res) => {
   try {
     const { tab } = req.params;
     const noteData = await Model.findOne({
@@ -120,25 +121,23 @@ export const deleteNote = async (req, res) => {
         },
       }
     );
-    res
-      .status(200)
-      .json({
-        message: `Note deleted successfully`,
-        deletedNoteData,
-        noteData,
-      });
+    res.status(200).json({
+      message: `Note deleted successfully`,
+      deletedNoteData,
+      noteData,
+    });
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
-};
+});
 
-export const deleteTab = async (req, res) => {
+export const deleteTab = expressAsyncHandler(async (req, res) => {
   try {
     const noteData = await Model.findOne({
-      tabname: req.params.tab,
+      id: req.params.id,
     });
     const deleted = await Model.deleteOne({
-      tabname: req.params.tab,
+      id: req.params.id,
     });
     res
       .status(200)
@@ -146,4 +145,15 @@ export const deleteTab = async (req, res) => {
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
-};
+});
+
+export const loginUser = expressAsyncHandler(async (req, res) => {
+  try {
+    const { username, passwaord } = req.body;
+    res
+      .status(200)
+      .json({ message: `Tab deleted successfully`, deleted, noteData });
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+});

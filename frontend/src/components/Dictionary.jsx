@@ -4,9 +4,9 @@ import axios from "axios";
 import Results from "./Results.jsx";
 import { getLocalHostURL } from "../utils/helper.jsx";
 
-
 export default function Dictionary(props) {
   let [keyword, setKeyword] = useState(props.text);
+  let [loading, setLoading] = useState(false);
   let [results, setResults] = useState(null);
   let [errorOccured, setErrorOccured] = useState({ error: false, msg: null });
 
@@ -22,14 +22,16 @@ export default function Dictionary(props) {
   const Search = (event) => {
     event?.preventDefault();
     let apiUrl = `${getLocalHostURL}/dict/${keyword}`;
+    setLoading(true);
     axios
       .get(apiUrl, { headers: { "Content-Type": "" } })
       .then((res) => {
-        setErrorOccured(null);
+        setLoading(false);
+        setErrorOccured({ error: false, msg: null });
         handleDictionaryResponse(res);
       })
       .catch((e) => {
-        console.log("first");
+        setLoading(false);
         setErrorOccured({
           error: true,
           msg: e.response?.status !== 200 ? e.response?.data?.message : e,
@@ -48,7 +50,7 @@ export default function Dictionary(props) {
     >
       <form onSubmit={Search} className="flex mt-2">
         <input
-          className="focus:ring-2 focus:ring-blue-500 h-11 focus:outline-none appearance-none flex-1 text-sm leading-6 text-slate-400 placeholder-slate-400 rounded-lg pl-4 pr-2 mr-4 ring-1 ring-slate-500 shadow-sm bg-gray-700 border ml-2 w-full border-gray-600
+          className="focus:ring-2 focus:ring-blue-500 h-11 focus:outline-none appearance-none flex-1 text-sm leading-6 text-slate-100 placeholder-slate-400 rounded-lg pl-4 pr-2 mr-4 ring-1 ring-slate-500 shadow-sm bg-gray-700 dark:bg-gray-700 border ml-2 w-full border-gray-600 dark:text-slate-200
           "
           type="search"
           onChange={handleKeywordChange}
@@ -78,8 +80,16 @@ export default function Dictionary(props) {
         </button>
       </form>
       <section className="overflow-scroll h-full mx-3 my-3">
-        {!errorOccured ? (
-          <Results results={results} />
+        {!errorOccured.error ? (
+          !loading ? (
+            <Results results={results} />
+          ) : (
+            <h2 className="m-3">
+              Please Wait..filtering results for you.
+              <br />
+              {errorOccured?.msg}
+            </h2>
+          )
         ) : (
           <h2 className="m-3">
             Some Error Ocurred. <br />
@@ -87,12 +97,12 @@ export default function Dictionary(props) {
           </h2>
         )}
       </section>
-      <div className="flex flex-row mb-4">
+      <div className="flex flex-row-reverse mb-4">
         {props.readMode === false && (
           <button
             type="button"
             className="rounded-md items-center justify-content text-[#444444] hover:text-[#000000]
-            dark:text-[#989898] dark:hover:text-[#ffffff] font-semibold ring-2 ring-[#5d5d5d] hover:ring-green-600 flex py-2 px-4 ml-auto mr-4"
+            dark:text-[#989898] dark:hover:text-[#ffffff] font-semibold ring-2 ring-[#5d5d5d] hover:ring-green-600 flex py-2 px-4 mr-4"
             onClick={props.saveHandler}
           >
             Save
@@ -101,7 +111,7 @@ export default function Dictionary(props) {
         <button
           type="button"
           className="rounded-md items-center justify-content text-[#444444] hover:text-[#000000]
-          dark:text-[#989898] dark:hover:text-[#ffffff] font-semibold ring-2 hover:ring-red-400 ring-[#5d5d5d] flex mr-3 px-4"
+          dark:text-[#989898] dark:hover:text-[#ffffff] font-semibold ring-2 hover:ring-red-400 ring-[#5d5d5d] flex mr-3 px-4 py-2"
           onClick={() => {
             props.setVisible(false);
             props.setInputText.current.value = "";

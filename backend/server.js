@@ -5,7 +5,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import morgan from "morgan";
-import routes from "./route.js";
+import appRoute from "./routes/appRoute.js";
+import userRoute from "./routes/userRoute.js";
+import errorHandler from "./middleware/errorMiddleware.js";
 
 /* CONFIGURATION */
 dotenv.config();
@@ -18,8 +20,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 
+/* ERROR */
+app.use(errorHandler);
+
 /* ROUTES */
-app.use("/", routes);
+app.use("/api/", appRoute);
+app.use("/api/user/", userRoute);
 
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 5000;

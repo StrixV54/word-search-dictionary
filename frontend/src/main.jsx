@@ -17,5 +17,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <App />
       </SwitchProvider>
     </Provider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

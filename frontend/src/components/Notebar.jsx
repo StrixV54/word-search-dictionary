@@ -1,32 +1,55 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import Note from "./Note.jsx";
 import Dictionary from "./Dictionary.jsx";
 import actions from "../reducer/actions.jsx";
 import { useDispatch, useSelector } from "react-redux";
-import { getCurrentTime, uuid } from "../utils/helper.jsx";
+import { getCurrentTime, getLocalHostURL, uuid } from "../utils/helper.jsx";
+import axios from "axios";
+import { SwitchContext } from "../context/SwitchTheme.jsx";
+import { TiThMenu } from "react-icons/ti";
 
 export default function Notebar(props) {
-  // const { noteData, saveNoteHandler, deleteNote } = props;
+  const { width, widthFun } = props;
   const inputValueRef = useRef(null);
   const [visible, setVisible] = useState(false);
   const [readOnlyMode, setReadOnlyMode] = useState(false);
   const noteData = useSelector((state) => state.notebox.noteList);
+  const activeTab = useSelector((state) => state.sidetab.activeTab);
   const dispatch = useDispatch();
+  const [isDarkMode, toggleMode, windowSize] = useContext(SwitchContext);
 
   const saveHandler = () => {
     const inputValue = inputValueRef.current.value;
     if (inputValue.length != 0) {
       // console.log(inputValue);
       // saveNoteHandler(inputValue);
+      const id = uuid();
+      saveNote(id, inputValue, getCurrentTime, "Red", activeTab);
       dispatch({
         type: actions.ADD_ITEM,
-        id: uuid(),
+        id: id,
         text: inputValue,
         time: getCurrentTime,
       });
       //clear the textarea
       inputValueRef.current.value = "";
       setVisible(false);
+    }
+  };
+
+  const saveNote = async (id, text, time, color, tabName) => {
+    try {
+      const res = await axios.post(`${getLocalHostURL}/addnote/${tabName}`, {
+        id: id,
+        text: text,
+        time: time,
+        color: color,
+      });
+      const data = await res;
+      console.log(data);
+      // return data;
+    } catch (error) {
+      console.log("Error in connecting and saving Data");
     }
   };
 
@@ -50,6 +73,12 @@ export default function Notebar(props) {
   return (
     <div className="h-full w-full flex-1 rounded-md ml-3 mr-4 mb-5 p-2 relative">
       <div className="flex items-center justify-center mt-2 mb-4">
+        {width <= 640 && (
+          <TiThMenu
+            className="h-9 w-9 text-[#707070] hover:text-[#2b6aa9]"
+            onClick={() => widthFun((prev) => !prev)}
+          />
+        )}
         <input
           className="focus:ring-1 focus:ring-neutral-600 focus:outline-none appearance-none flex-1 text-sm leading-6 dark:text-slate-400 text-white
          dark:placeholder-slate-500 placeholder-gray-200 rounded-full py-2 pl-5 shadow-sm bg-black/40 border mr-3 ml-2 border-[#6e6058] dark:border-gray-600 dark:bg-[#1c1e24]"

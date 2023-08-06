@@ -1,22 +1,29 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Tab from "./Tab.jsx";
 import actions from "../reducer/actions.jsx";
 import { useDispatch, useSelector } from "react-redux";
-import { getCurrentTime, uuid } from "../utils/helper.jsx";
+import { getCurrentTime, getLocalHostURL, uuid } from "../utils/helper.jsx";
 import { AiOutlinePlus, AiOutlineArrowUp } from "react-icons/ai";
+import axios from "axios";
+import { SwitchContext } from "../context/SwitchTheme.jsx";
+import { TiThMenu } from "react-icons/ti";
 
-export default function Sidebar() {
-  // const { activeTab, toggleTab, createNewTab, noteTab, deleteTab } = props;
+export default function Sidebar(props) {
+  const { width, sidebarToggle, widthFun } = props;
   const [toggle, setToggle] = useState(false);
   const inputTabRef = useRef(null);
   const noteTabList = useSelector((state) => state.sidetab.tabList);
   const dispatch = useDispatch();
+  const [isDarkMode, toggleMode, windowSize] = useContext(SwitchContext);
+  console.log(windowSize);
 
   const handleButtonClick = () => {
     const input = inputTabRef.current.value;
     if (input.length !== 0) {
-      console.log("Added " + input);
+      // console.log("Added " + input);
       // createNewTab(input);
+      const id = uuid();
+      saveTab(id, getCurrentTime, "Red", input);
       dispatch({
         type: actions.ADD_TAB,
         id: uuid(),
@@ -29,21 +36,59 @@ export default function Sidebar() {
     }
   };
 
+  const saveTab = async (id, time, color, tabName) => {
+    try {
+      const res = await axios.post(
+        `${getLocalHostURL}/addtab`,
+        {
+          id: id,
+          tabname: tabName,
+          time: time,
+          color: color,
+          notelist: "",
+        },
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        },
+      );
+      const data = await res;
+      // console.log(data);
+      // return data;
+    } catch (error) {
+      console.log("Error in connecting and saving Data");
+    }
+  };
+
   const changeToggle = () => {
     setToggle((prev) => !prev);
   };
 
-  return (
-    <div className="max-w-[300px] flex md:block rounded-lg p-1 m-3 pb-3 overflow-hidden flex-col">
+  return width <= 640 && !sidebarToggle ? (
+    ""
+  ) : (
+    <div
+      className={`"max-w-[300px] flex rounded-lg p-1 m-3 pb-3 h-full overflow-hidden flex-col ${
+        sidebarToggle &&
+        "absolute left-0 bg-[#323138] overflow-hidden -translate-x-3 -translate-y-4 p-6 z-10"
+      }`}
+    >
+      {width <= 640 && (
+        <TiThMenu
+          className="ml-auto items-end h-10 w-10 text-[#707070] hover:text-[#2b6aa9] mb-4"
+          onClick={() => widthFun((prev) => !prev)}
+        />
+      )}
       <button
-        className="relative inline-flex items-center justify-center p-0.5 mb-3 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-violet-400 dark:from-violet-300/60 to-blue-300 dark:to-blue-500/50 hover:from-purple-500 hover:to-blue-400 hover:text-white dark:text-white w-full"
+        className="relative inline-flex items-center justify-center p-0.5 mb-3 text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-violet-400 dark:from-violet-300/60 to-blue-300 dark:to-blue-500/50 hover:from-purple-500 hover:to-blue-400 hover:text-white dark:text-white w-full"
         onClick={changeToggle}
       >
-        <span className="flex relative px-3 py-2 transition-all ease-in duration-75 bg-[#f5f5f5] dark:bg-gray-900 rounded-md group-hover:bg-opacity-0 w-full">
+        <span className="flex relative px-3 py-2 transition-all items-center ease-in duration-75 bg-[#f5f5f5] dark:bg-gray-900 rounded-md group-hover:bg-opacity-0 w-full">
           {toggle ? (
-            <AiOutlineArrowUp className="w-5 h-5 mr-4" />
+            <AiOutlineArrowUp className="w-4 h-4 mr-2" />
           ) : (
-            <AiOutlinePlus className="w-5 h-5 mr-4" />
+            <AiOutlinePlus className="w-4 h-4 mr-2" />
           )}
           New Category Tab
         </span>
@@ -77,18 +122,14 @@ export default function Sidebar() {
         </div>
       )}
 
-      <div className="overflow-y-scroll">
+      <div className="h-full overflow-scroll ver-scroll">
         {noteTabList &&
           noteTabList.map((tabData) => (
             <Tab
               key={tabData.id}
               id={tabData.id}
-              text={tabData.text}
+              text={tabData.tabname}
               time={tabData.time}
-              // input={inputTabRef}
-              // deleteTab={deleteTab}
-              // toggleTab={toggleTab}
-              // active={tabData.text === activeTab ? true : false}
             />
           ))}
       </div>

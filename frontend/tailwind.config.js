@@ -8,6 +8,7 @@ export default {
       poppins: ["Poppins", "sans-serif"],
       satisfy: ["Satisfy", "cursive"],
       kalam: ["Kalam", "cursive"],
+      Josepfin: ["Josefin Sans", "sans-serif"],
     },
   },
   plugins: [],

@@ -8,7 +8,7 @@ const initialStateTab = {
 const reducerTab = (state = initialStateTab, action) => {
   switch (action.type) {
     case actions.ADD_TAB: {
-      const data = { id: action.id, text: action.text, time: action.time };
+      const data = { id: action.id, tabname: action.text, time: action.time };
       return { ...state, tabList: [...state.tabList, data] };
     }
     case actions.REMOVE_TAB: {

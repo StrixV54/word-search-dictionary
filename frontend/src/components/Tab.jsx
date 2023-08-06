@@ -1,5 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import actions from "../reducer/actions.jsx";
+import axios from "axios";
+import { getLocalHostURL } from "../utils/helper.jsx";
 
 /* eslint-disable react/prop-types */
 export default function Tab(props) {
@@ -8,17 +10,46 @@ export default function Tab(props) {
   const dispatch = useDispatch();
   const isActive = text === useSelector((state) => state.sidetab.activeTab);
 
-  const deleteCurrentTab = (id) =>
+  const deleteCurrentTab = (id) => {
     dispatch({ type: actions.REMOVE_TAB, id: id });
+    deleteTab(id);
+    dispatch({ type: actions.FETCH_ITEMS, newList: [] });
+  };
 
   const toggleTab = (input) => {
-    if (input?.length === 0) console.log("Empty tab");
-    dispatch({ type: actions.ACTIVE_TAB, text: text });
-    const data = JSON.parse(localStorage.getItem(input));
-    if (data) {
-      dispatch({ type: actions.FETCH_ITEMS, newList: [...data] });
-    } else {
-      dispatch({ type: actions.FETCH_ITEMS, newList: [] });
+    const load = async () => {
+      if (input?.length === 0) console.log("Empty tab");
+      dispatch({ type: actions.ACTIVE_TAB, text: text });
+      const data = await getNotes(text);
+      console.log(data);
+      if (data) {
+        dispatch({ type: actions.FETCH_ITEMS, newList: [...data.note] });
+      } else {
+        dispatch({ type: actions.FETCH_ITEMS, newList: [] });
+      }
+    };
+    load();
+  };
+
+  const getNotes = async (tabName) => {
+    try {
+      const { data } = await axios.get(
+        `${getLocalHostURL}/getnotes/${tabName}`,
+      );
+      // console.log(data);
+      return data;
+    } catch (error) {
+      console.log("Error in connecting and fetching Data");
+    }
+  };
+
+  const deleteTab = async (id) => {
+    try {
+      const { data } = await axios.delete(`${getLocalHostURL}/deletetab/${id}`);
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.log("Error in connecting and fetching Data");
     }
   };
 
@@ -28,8 +59,8 @@ export default function Tab(props) {
       className={`flex items-center mb-3 rounded-md mt-1
         ${
           isActive
-            ? "hover:bg-black/20 hover:border-black/20 hover:dark:bg-white/10 bg-[#e7e7e7] dark:bg-[#28282e] border-[2.5px] border-[#9e9e9e] dark:border-[#707073]"
-            : " hover:bg-black/20 hover:dark:bg-white/10 bg-[#e7e7e7] dark:bg-[#28282e] border-[2.5px] border-[#e7e7e7] dark:border-[#28282e]"
+            ? "hover:bg-[#b3b3b3] hover:border-black/20 hover:dark:bg-[#000000] bg-[#e7e7e7] dark:bg-[#28282e] border-[2.5px] border-[#9e9e9e] dark:border-[#707073]"
+            : " hover:bg-[#b3b3b3] hover:dark:bg-[#000000] bg-[#e7e7e7] dark:bg-[#28282e] border-[2.5px] border-[#e7e7e7] dark:border-[#28282e]"
         }
         `}
     >
