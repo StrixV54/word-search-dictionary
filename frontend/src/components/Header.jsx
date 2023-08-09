@@ -1,11 +1,24 @@
 import { SwitchContext } from "../context/SwitchTheme";
 import logo from "../assets/note.png";
 import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MdAccountCircle } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import actions from "../reducer/actions";
 
 export default function Header() {
   const [isDarkMode, toggleMode] = useContext(SwitchContext);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.auth.user);
+
+  const logout = () => {
+    localStorage.removeItem("user");
+    dispatch({ type: actions.RESETUSER });
+    window.location.reload();
+    // navigate("/login");
+    // setTimeout(() => navigate("/login"), 500);
+  };
 
   return (
     <div
@@ -23,8 +36,13 @@ export default function Header() {
         </div>
         <div className="flex flex-row items-center gap-4">
           <div className="text-gray-600 dark:text-gray-400 text-sm flex flex-row gap-1">
-            <MdAccountCircle className="h-5 w-5" />
-            <Link to="/login">Logout</Link>
+            <div className="flex flex-row mr-2">
+              <span>{user?.name}</span>&nbsp;
+              <MdAccountCircle className="h-5 w-5" />
+            </div>
+            <button onClick={logout} className="">
+              Logout
+            </button>
           </div>
           <button
             className="w-12 h-7 px-1 my-auto mr-8 border-2 border-gray-500 dark:border-gray-600 rounded-full"

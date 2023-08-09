@@ -1,9 +1,69 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SideRegisterImage from "../assets/Notes-pana.svg";
+import { axiosLocal } from "../utils/helper";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import actions from "../reducer/actions";
+import { useEffect, useState } from "react";
 
 function Register() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    password2: "",
+  });
+
+  const { name, email, password, password2 } = formData;
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { user, isError, isSuccess, message } = useSelector(
+    (state) => state.auth,
+  );
+
+  useEffect(() => {
+    isError && toast.error(message);
+    (isSuccess || user) && navigate("/");
+    dispatch({ type: actions.RESET });
+  }, [user, isError, isSuccess, message, navigate, dispatch]);
+
+  const onChange = (e) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+
+    if (password !== password2) {
+      toast.error("Passwords do not match");
+    } else {
+      const userData = {
+        name,
+        email,
+        password,
+      };
+      const register = async () => {
+        const response = await axiosLocal.post("/user/register", userData);
+        if (response.data) {
+          userData.token = response.data.token;
+          localStorage.setItem("user", JSON.stringify(response.data));
+          dispatch({ type: actions.AUTHENTICATED, user: userData });
+        } else {
+          dispatch({ type: actions.AUTHERROR, message: response.data });
+        }
+        return response.data;
+      };
+      register();
+    }
+  };
+
   return (
-    <section className="h-screen bg-[#e9e9e9] text-black">
+    <section className="h-screen bg-[#e9e9e9] text-black text-sm">
       <div className="h-full">
         <div className="g-6 flex h-full flex-wrap items-center justify-center lg:justify-between">
           <div className="shrink-1 mb-12 grow-0 basis-auto md:mb-0 md:w-9/12 md:shrink-0 lg:w-6/12 xl:w-6/12">
@@ -15,7 +75,7 @@ function Register() {
           </div>
 
           <div className="bg-[#ffffff] p-10 shadow border-neutral-300 border mb-12 md:mb-0 md:w-8/12 lg:w-5/12 xl:w-5/12 mr-12">
-            <form>
+            <form onSubmit={onSubmit}>
               <div className="flex flex-row items-center justify-center lg:justify-start pb-6">
                 <p className="mb-0 mr-4 text-lg font-semibold">
                   Create your account
@@ -26,11 +86,39 @@ function Register() {
                   type="text"
                   className="border-stone-400 peer block min-h-[auto] w-full rounded border bg-transparent px-3 py-[0.32rem] leading-[2.15] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
                   // id="exampleFormControlInput2"
-                  placeholder="Email address"
+                  placeholder="Name"
+                  id="name"
+                  name="name"
+                  value={name}
+                  onChange={onChange}
                 />
                 <label
                   // for="exampleFormControlInput2"
-                  className="pointer-events-none px-1 absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[2.15] text-neutral-600 transition-all duration-200 ease-out peer-focus:-translate-y-[1.15rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[1.15rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none peer-focus:bg-white peer-focus:text-black"
+                  className={`pointer-events-none px-1 absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[2.15] text-neutral-600 transition-all duration-200 ease-out peer-focus:-translate-y-[1.15rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[1.15rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none peer-focus:bg-white peer-focus:text-black ${
+                    email.length !== 0 &&
+                    "scale-[0.8] -translate-y-[1.15rem] bg-white text-black"
+                  }`}
+                >
+                  Name
+                </label>
+              </div>
+              <div className="relative mb-6" data-te-input-wrapper-init>
+                <input
+                  type="text"
+                  className="border-stone-400 peer block min-h-[auto] w-full rounded border bg-transparent px-3 py-[0.32rem] leading-[2.15] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
+                  // id="exampleFormControlInput2"
+                  placeholder="Email address"
+                  id="email"
+                  name="email"
+                  value={email}
+                  onChange={onChange}
+                />
+                <label
+                  // for="exampleFormControlInput2"
+                  className={`pointer-events-none px-1 absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[2.15] text-neutral-600 transition-all duration-200 ease-out peer-focus:-translate-y-[1.15rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[1.15rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none peer-focus:bg-white peer-focus:text-black ${
+                    email.length !== 0 &&
+                    "scale-[0.8] -translate-y-[1.15rem] bg-white text-black"
+                  }`}
                 >
                   Email address
                 </label>
@@ -42,11 +130,17 @@ function Register() {
                   className="border-stone-400 peer block min-h-[auto] w-full rounded border bg-transparent px-3 py-[0.32rem] leading-[2.15] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
                   // id="exampleFormControlInput22"
                   placeholder="Password"
+                  id="password"
+                  name="password"
+                  value={password}
+                  onChange={onChange}
                 />
                 <label
                   // for="exampleFormControlInput22"
-                  className="peer-focus:bg-white px-1 pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[2.15] text-neutral-600 transition-all duration-200 ease-out peer-focus:-translate-y-[1.15rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[1.15rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none peer-focus:text-black"
-                >
+                  className={`pointer-events-none px-1 absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[2.15] text-neutral-600 transition-all duration-200 ease-out peer-focus:-translate-y-[1.15rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[1.15rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none peer-focus:bg-white peer-focus:text-black ${
+                    email.length !== 0 &&
+                    "scale-[0.8] -translate-y-[1.15rem] bg-white text-black"
+                  }`}>
                   Password
                 </label>
               </div>
@@ -56,11 +150,18 @@ function Register() {
                   type="password"
                   className="border-stone-400 peer block min-h-[auto] w-full rounded border bg-transparent px-3 py-[0.32rem] leading-[2.15] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
                   // id="exampleFormControlInput22"
-                  placeholder="Password"
+                  placeholder="Confirm Password"
+                  id="passwaord2"
+                  name="password2"
+                  value={password2}
+                  onChange={onChange}
                 />
                 <label
                   // for="exampleFormControlInput22"
-                  className="peer-focus:bg-white px-1 pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[2.15] text-neutral-600 transition-all duration-200 ease-out peer-focus:-translate-y-[1.15rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[1.15rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none peer-focus:text-black"
+                  className={`pointer-events-none px-1 absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[2.15] text-neutral-600 transition-all duration-200 ease-out peer-focus:-translate-y-[1.15rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[1.15rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none peer-focus:bg-white peer-focus:text-black ${
+                    email.length !== 0 &&
+                    "scale-[0.8] -translate-y-[1.15rem] bg-white text-black"
+                  }`}
                 >
                   Confirm Password
                 </label>
@@ -79,31 +180,29 @@ function Register() {
                     // for="exampleCheck2"
                   >
                     {"I accept the "}
-                    <a href="#!" className="text-[#4860da]">
-                      Terms and Conditions
-                    </a>
+                    <a className="text-[#4860da]">Terms and Conditions</a>
                   </label>
                 </div>
               </div>
 
               <div className="text-center lg:text-left">
                 <button
-                  type="button"
                   className="inline-block bg-[#1463c2] hover:bg-[#4b8dde] rounded bg-primary px-7 pb-2.5 pt-3 text-sm font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out  hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
                   data-te-ripple-init
                   data-te-ripple-color="light"
+                  type="submit"
                 >
                   Sign Up
                 </button>
 
                 <p className="mb-0 mt-2 pt-1 text-sm font-semibold">
-                  Already have an account?
-                  <a
-                    href="#!"
+                  Already have an account? &nbsp;
+                  <Link
+                    to="/login"
                     className="text-[#b63e3e] transition duration-150 ease-in-out hover:text-danger-600 focus:text-danger-600 active:text-danger-700 hover:text-[#e81414]"
                   >
-                    &nbsp; <Link to="/login">Login</Link>
-                  </a>
+                    Login
+                  </Link>
                 </p>
               </div>
             </form>

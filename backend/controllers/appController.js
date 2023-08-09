@@ -17,8 +17,10 @@ export const getNotes = expressAsyncHandler(async (req, res) => {
     const { tab } = req.params;
     const tabNote = await TabModel.findOne({
       tabname: tab,
+      user: String(req.user.id),
     });
-    const note = await tabNote?.notelist;
+    // console.log(user);
+    const note = await tabNote.notelist;
     res.status(200).json({ note });
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -27,7 +29,8 @@ export const getNotes = expressAsyncHandler(async (req, res) => {
 
 export const getTabs = expressAsyncHandler(async (req, res) => {
   try {
-    const products = await Model.find();
+    console.log(req.user.id);
+    const products = await TabModel.find({ user: req.user.id });
     res.status(200).json(products);
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -53,12 +56,14 @@ export const createNote = expressAsyncHandler(async (req, res) => {
       time: req.body.time,
     };
     const { tab } = req.params;
-    const findNoteData = await Model.findOne({
+    const user = req.user.id;
+    const findNoteData = await TabModel.findOne({
       tabname: tab,
+      user: req.user.id,
     });
     const note = findNoteData.notelist;
-    const updateNoteData = await Model.updateOne(
-      { tabname: tab },
+    const updateNoteData = await TabModel.updateOne(
+      { tabname: tab, user: req.user.id },
       {
         $set: {
           notelist: [...note, noteBody],
@@ -80,13 +85,14 @@ export const createTab = expressAsyncHandler(async (req, res) => {
   try {
     const { body } = req;
     console.log(body);
-    const created = await Model.create(
+    const created = await TabModel.create(
       body.notelist.length === 0
         ? {
             id: body.id,
             color: body.color,
             tabname: body.tabname,
             time: body.time,
+            user: req.user.id,
           }
         : {
             id: body.id,
@@ -94,6 +100,7 @@ export const createTab = expressAsyncHandler(async (req, res) => {
             color: body.color,
             time: body.time,
             notelist: body.notelist,
+            user: req.user.id,
           }
     );
     res.status(200).json({
@@ -109,12 +116,13 @@ export const createTab = expressAsyncHandler(async (req, res) => {
 export const deleteNote = expressAsyncHandler(async (req, res) => {
   try {
     const { tab } = req.params;
-    const noteData = await Model.findOne({
+    const noteData = await TabModel.findOne({
       tabname: tab,
+      user: req.user.id,
     });
     const newList = noteData.notelist.filter((tab) => tab.id !== req.params.id);
-    const deletedNoteData = await Model.updateOne(
-      { tabname: tab },
+    const deletedNoteData = await TabModel.updateOne(
+      { tabname: tab, user: req.user.id },
       {
         $set: {
           notelist: newList,
@@ -133,11 +141,13 @@ export const deleteNote = expressAsyncHandler(async (req, res) => {
 
 export const deleteTab = expressAsyncHandler(async (req, res) => {
   try {
-    const noteData = await Model.findOne({
+    const noteData = await TabModel.findOne({
       id: req.params.id,
+      user: req.user.id,
     });
-    const deleted = await Model.deleteOne({
+    const deleted = await TabModel.deleteOne({
       id: req.params.id,
+      user: req.user.id,
     });
     res
       .status(200)
@@ -147,13 +157,13 @@ export const deleteTab = expressAsyncHandler(async (req, res) => {
   }
 });
 
-export const loginUser = expressAsyncHandler(async (req, res) => {
-  try {
-    const { username, passwaord } = req.body;
-    res
-      .status(200)
-      .json({ message: `Tab deleted successfully`, deleted, noteData });
-  } catch (error) {
-    res.status(404).json({ message: error.message });
-  }
-});
+// export const loginUser = expressAsyncHandler(async (req, res) => {
+//   try {
+//     const { username, password } = req.body;
+//     res
+//       .status(200)
+//       .json({ message: `Fetch successfully`, name , noteData });
+//   } catch (error) {
+//     res.status(404).json({ message: error.message });
+//   }
+// });

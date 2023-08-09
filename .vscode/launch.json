@@ -25,7 +25,7 @@
       "request": "launch",
       "name": "Launch Program",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/backend/controllers/userController.js"
+      "program": "${workspaceFolder}/backend"
     }
   ]
 }

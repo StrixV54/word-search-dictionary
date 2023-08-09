@@ -20,7 +20,7 @@ const SwitchProvider = ({ children }) => {
 
   useEffect(() => {
     const isDarkSet = localStorage.getItem("DarkMode");
-    console.log("Dark", isDarkSet, "Hook", isDarkMode);
+    // console.log("Dark", isDarkSet, "Hook", isDarkMode);
     if (isDarkSet === "true") setIsDarkMode(true);
     else setIsDarkMode(false);
   }, []);

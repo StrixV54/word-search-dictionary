@@ -1,4 +1,5 @@
 import { v4 as uuid } from "uuid";
+import axios from "axios";
 
 const getCurrentTime = new Date().toLocaleString(undefined, {
   hour: "2-digit",
@@ -9,6 +10,8 @@ const getCurrentTime = new Date().toLocaleString(undefined, {
   hour12: true,
 });
 
-const getLocalHostURL = "http://localhost:5000";
+const axiosLocal = axios.create({
+  baseURL: "http://localhost:5000/api",
+});
 
-export { getCurrentTime, getLocalHostURL, uuid };
+export { getCurrentTime, axiosLocal, uuid };

@@ -1,11 +1,12 @@
 import actions from "./actions.jsx";
 
-const initialStateTab = {
+const initialState = {
   tabList: [],
   activeTab: null,
+  isActiveDeleted: false,
 };
 
-const reducerTab = (state = initialStateTab, action) => {
+const reducerTab = (state = initialState, action) => {
   switch (action.type) {
     case actions.ADD_TAB: {
       const data = { id: action.id, tabname: action.text, time: action.time };
@@ -22,8 +23,14 @@ const reducerTab = (state = initialStateTab, action) => {
     case actions.ACTIVE_TAB: {
       return { ...state, activeTab: action.text };
     }
+    case actions.ISACTIVEDELETED: {
+      return { ...state, isActiveDeleted: true };
+    }
     case actions.FETCH_TABS: {
       return { ...state, tabList: [...action.newList] };
+    }
+    case actions.RESETACTIVE: {
+      return { ...state, isActiveDeleted: false };
     }
     default:
       return state;

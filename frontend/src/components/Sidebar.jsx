@@ -2,9 +2,8 @@ import { useContext, useEffect, useRef, useState } from "react";
 import Tab from "./Tab.jsx";
 import actions from "../reducer/actions.jsx";
 import { useDispatch, useSelector } from "react-redux";
-import { getCurrentTime, getLocalHostURL, uuid } from "../utils/helper.jsx";
+import { getCurrentTime, axiosLocal, uuid } from "../utils/helper.jsx";
 import { AiOutlinePlus, AiOutlineArrowUp } from "react-icons/ai";
-import axios from "axios";
 import { SwitchContext } from "../context/SwitchTheme.jsx";
 import { TiThMenu } from "react-icons/ti";
 
@@ -15,7 +14,8 @@ export default function Sidebar(props) {
   const noteTabList = useSelector((state) => state.sidetab.tabList);
   const dispatch = useDispatch();
   const [isDarkMode, toggleMode, windowSize] = useContext(SwitchContext);
-  console.log(windowSize);
+  const user = useSelector((state) => state.auth.user);
+  const token = user?.token;
 
   const handleButtonClick = () => {
     const input = inputTabRef.current.value;
@@ -33,13 +33,41 @@ export default function Sidebar(props) {
       inputTabRef.current.value = "";
       dispatch({ type: actions.ACTIVE_TAB, text: input });
       setToggle(false);
+      toggleTab(input);
+    }
+  };
+
+  const toggleTab = (text) => {
+    const load = async () => {
+      dispatch({ type: actions.ACTIVE_TAB, text: text });
+      const data = await getNotes(text);
+      if (data) {
+        dispatch({ type: actions.FETCH_ITEMS, newList: [...data.note] });
+      } else {
+        dispatch({ type: actions.FETCH_ITEMS, newList: [] });
+      }
+    };
+    load();
+  };
+
+  const getNotes = async (tabName) => {
+    try {
+      const { data } = await axiosLocal.get(`/getnotes/${tabName}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      // console.log(data);
+      return data;
+    } catch (error) {
+      console.log("Error in connecting and fetching Data");
     }
   };
 
   const saveTab = async (id, time, color, tabName) => {
     try {
-      const res = await axios.post(
-        `${getLocalHostURL}/addtab`,
+      const { data } = await axiosLocal.post(
+        `/addtab`,
         {
           id: id,
           tabname: tabName,
@@ -50,14 +78,15 @@ export default function Sidebar(props) {
         {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
+            Authorization: `Bearer ${token}`,
           },
         },
       );
-      const data = await res;
+      // const data = await res;
       // console.log(data);
-      // return data;
+      return data;
     } catch (error) {
-      console.log("Error in connecting and saving Data");
+      console.log("Error in connecting and saving Data. " + error.message);
     }
   };
 

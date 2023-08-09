@@ -2,8 +2,7 @@ import actions from "../reducer/actions.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { IoSearchCircle } from "react-icons/io5";
 import { AiFillMinusCircle } from "react-icons/ai";
-import { getLocalHostURL } from "../utils/helper.jsx";
-import axios from "axios";
+import { axiosLocal } from "../utils/helper.jsx";
 
 export default function Note(props) {
   // eslint-disable-next-line react/prop-types
@@ -14,12 +13,16 @@ export default function Note(props) {
     dispatch({ type: actions.REMOVE_ITEM, id: id });
     deleteNote(activeTab, id);
   };
+  const user = useSelector((state) => state.auth.user);
+  const token = user?.token;
 
   const deleteNote = async (tabName, id) => {
     try {
-      const { data } = await axios.delete(
-        `${getLocalHostURL}/deletenote/${tabName}/${id}`,
-      );
+      const { data } = await axiosLocal.delete(`/deletenote/${tabName}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       // console.log(data);
       return data;
     } catch (error) {

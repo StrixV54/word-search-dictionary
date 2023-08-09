@@ -3,8 +3,7 @@ import Note from "./Note.jsx";
 import Dictionary from "./Dictionary.jsx";
 import actions from "../reducer/actions.jsx";
 import { useDispatch, useSelector } from "react-redux";
-import { getCurrentTime, getLocalHostURL, uuid } from "../utils/helper.jsx";
-import axios from "axios";
+import { getCurrentTime, axiosLocal, uuid } from "../utils/helper.jsx";
 import { SwitchContext } from "../context/SwitchTheme.jsx";
 import { TiThMenu } from "react-icons/ti";
 
@@ -16,7 +15,9 @@ export default function Notebar(props) {
   const noteData = useSelector((state) => state.notebox.noteList);
   const activeTab = useSelector((state) => state.sidetab.activeTab);
   const dispatch = useDispatch();
-  const [isDarkMode, toggleMode, windowSize] = useContext(SwitchContext);
+  const [isDarkMode, toggleMode] = useContext(SwitchContext);
+  const user = useSelector((state) => state.auth.user);
+  const token = user?.token;
 
   const saveHandler = () => {
     const inputValue = inputValueRef.current.value;
@@ -39,14 +40,21 @@ export default function Notebar(props) {
 
   const saveNote = async (id, text, time, color, tabName) => {
     try {
-      const res = await axios.post(`${getLocalHostURL}/addnote/${tabName}`, {
-        id: id,
-        text: text,
-        time: time,
-        color: color,
-      });
-      const data = await res;
-      console.log(data);
+      const { body } = await axiosLocal.post(
+        `/addnote/${tabName}`,
+        {
+          id: id,
+          text: text,
+          time: time,
+          color: color,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      console.log(body);
       // return data;
     } catch (error) {
       console.log("Error in connecting and saving Data");
@@ -113,6 +121,9 @@ export default function Notebar(props) {
         </button>
       </div>
       {/* <div className="h-1 dark:bg-white/10 bg-black/10 rounded-lg md:block w-full"></div> */}
+      {noteData.length === 0 && (
+        <div className="w-full text-center p-4"> No Notes Present</div>
+      )}
       <div className="m-2 py-2 grid grid-flow-row md:grid-cols-3 grid-cols-2 grid-rows-2 gap-4 ">
         {noteData.length > 0 &&
           noteData.map((note) => (

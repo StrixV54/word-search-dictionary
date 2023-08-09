@@ -1,10 +1,10 @@
 import actions from "./actions.jsx";
 
-const initialStateNote = {
+const initialState = {
   noteList: [],
 };
 
-const reducerNote = (state = initialStateNote, action) => {
+const reducerNote = (state = initialState, action) => {
   switch (action.type) {
     case actions.ADD_ITEM:
       return {

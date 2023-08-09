@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import actions from "../reducer/actions.jsx";
-import axios from "axios";
-import { getLocalHostURL } from "../utils/helper.jsx";
+import { axiosLocal } from "../utils/helper.jsx";
 
 /* eslint-disable react/prop-types */
 export default function Tab(props) {
@@ -9,11 +8,15 @@ export default function Tab(props) {
 
   const dispatch = useDispatch();
   const isActive = text === useSelector((state) => state.sidetab.activeTab);
+  const user = useSelector((state) => state.auth.user);
+  const token = user?.token;
+  const tabData = useSelector((state) => state.sidetab.tabList);
 
   const deleteCurrentTab = (id) => {
     dispatch({ type: actions.REMOVE_TAB, id: id });
     deleteTab(id);
-    dispatch({ type: actions.FETCH_ITEMS, newList: [] });
+    console.log(tabData);
+    // dispatch({ type: actions.FETCH_ITEMS, newList: [] });
   };
 
   const toggleTab = (input) => {
@@ -33,10 +36,18 @@ export default function Tab(props) {
 
   const getNotes = async (tabName) => {
     try {
-      const { data } = await axios.get(
-        `${getLocalHostURL}/getnotes/${tabName}`,
-      );
-      // console.log(data);
+      const { data } = await axiosLocal.get(`/getnotes/${tabName}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(data);
+      const dat = await axiosLocal.get(`/getnotes/${tabName}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(dat.data);
       return data;
     } catch (error) {
       console.log("Error in connecting and fetching Data");
@@ -45,7 +56,11 @@ export default function Tab(props) {
 
   const deleteTab = async (id) => {
     try {
-      const { data } = await axios.delete(`${getLocalHostURL}/deletetab/${id}`);
+      const data = await axiosLocal.delete(`/deletetab/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       console.log(data);
       return data;
     } catch (error) {

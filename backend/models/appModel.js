@@ -2,11 +2,12 @@ import mongoose from "mongoose";
 
 const tabSchema = mongoose.Schema(
   {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: "User",
-    },
+    user: String,
+    // {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   required: true,
+    //   ref: "User",
+    // },
     tabname: String,
     id: String,
     notelist: Array,
@@ -18,4 +19,4 @@ const tabSchema = mongoose.Schema(
   }
 );
 
-export default mongoose.model("TabList", tabSchema);
+export default mongoose.model("list", tabSchema);

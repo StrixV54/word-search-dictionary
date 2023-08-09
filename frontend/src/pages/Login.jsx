@@ -1,7 +1,66 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SideLoginImage from "../assets/Prototyping.svg";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import actions from "../reducer/actions";
+import { axiosLocal } from "../utils/helper";
 
 function Login() {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const { email, password } = formData;
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { user, isError, isSuccess, message } = useSelector(
+    (state) => state.auth,
+  );
+
+  useEffect(() => {
+    console.log("login");
+    console.log(user);
+    isError && toast.error(message);
+    // console.log("tt", isSuccess, user);
+    user && navigate("/");
+  }, [user]);
+
+  const onChange = (e) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    if (email === "" || password === "") return;
+
+    const userData = {
+      email,
+      password,
+    };
+    const register = async () => {
+      const response = await axiosLocal.post("/user/login", userData);
+      if (response.data) {
+        userData.name = response.data.name;
+        userData.token = response.data.token;
+        localStorage.setItem("user", JSON.stringify(response.data));
+        console.log(userData);
+        dispatch({ type: actions.AUTHENTICATED, user: userData });
+      } else {
+        dispatch({ type: actions.AUTHERROR, message: response.data });
+      }
+      navigate("/");
+      return response.data;
+    };
+    register();
+  };
+
   return (
     <div className="h-full bg-[#e9e9e9] text-black flex flex-col">
       <div className="w-full pt-12 md:pt-20 pb-4 md:pb-8 text-center text-[25px] md:text-[38px] lg:text-[45px] font-Josepfin">
@@ -17,7 +76,7 @@ function Login() {
         </div>
 
         <div className="sm:m-0 m-auto items-center justify-center min-w-[350px] bg-[#ffffff] p-10 shadow border-neutral-300 border w-10/12 md:mb-0 md:w-8/12 lg:w-5/12 xl:w-5/12 sm:mr-16">
-          <form>
+          <form onSubmit={onSubmit}>
             <img
               src={SideLoginImage}
               className="sm:hidden w-9/12 m-auto"
@@ -87,10 +146,17 @@ function Login() {
                 className="border-stone-400 peer block min-h-[auto] w-full rounded border bg-transparent px-3 py-[0.32rem] leading-[2.15] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
                 // id="exampleFormControlInput2"
                 placeholder="Email address"
+                id="email"
+                name="email"
+                value={email}
+                onChange={onChange}
               />
               <label
                 // for="exampleFormControlInput2"
-                className="pointer-events-none px-1 absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[2.15] text-neutral-600 transition-all duration-200 ease-out peer-focus:-translate-y-[1.15rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[1.15rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none peer-focus:bg-white peer-focus:text-black"
+                className={`pointer-events-none px-1 absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[2.15] text-neutral-600 transition-all duration-200 ease-out peer-focus:-translate-y-[1.15rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[1.15rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none peer-focus:bg-white peer-focus:text-black ${
+                  email.length !== 0 &&
+                  "scale-[0.8] -translate-y-[1.15rem] bg-white text-black"
+                }`}
               >
                 Email address
               </label>
@@ -102,10 +168,17 @@ function Login() {
                 className="border-stone-400 peer block min-h-[auto] w-full rounded border bg-transparent px-3 py-[0.32rem] leading-[2.15] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
                 // id="exampleFormControlInput22"
                 placeholder="Password"
+                id="password"
+                name="password"
+                value={password}
+                onChange={onChange}
               />
               <label
                 // for="exampleFormControlInput22"
-                className="peer-focus:bg-white px-1 pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[2.15] text-neutral-600 transition-all duration-200 ease-out peer-focus:-translate-y-[1.15rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[1.15rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none peer-focus:text-black"
+                className={`pointer-events-none px-1 absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[2.15] text-neutral-600 transition-all duration-200 ease-out peer-focus:-translate-y-[1.15rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[1.15rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none peer-focus:bg-white peer-focus:text-black ${
+                  email.length !== 0 &&
+                  "scale-[0.8] -translate-y-[1.15rem] bg-white text-black"
+                }`}
               >
                 Password
               </label>
@@ -117,7 +190,7 @@ function Login() {
                   className="relative float-left -ml-[1.5rem] mr-[6px] mt-[0.15rem] h-[1.125rem] w-[1.125rem] appearance-none rounded-[0.25rem] border-[0.125rem] border-solid border-neutral-300 outline-none before:pointer-events-none before:absolute before:h-[0.875rem] before:w-[0.875rem] before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-[0px_0px_0px_13px_transparent] before:content-[''] checked:border-[#0ab134] checked:bg-[#0ab134] checked:before:opacity-[0.16] checked:after:absolute checked:after:-mt-px checked:after:ml-[0.25rem] checked:after:block checked:after:h-[0.8125rem] checked:after:w-[0.375rem] checked:after:rotate-45 checked:after:border-[0.125rem] checked:after:border-l-0 checked:after:border-t-0 checked:after:border-solid checked:after:border-white checked:after:bg-transparent checked:after:content-[''] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:shadow-none focus:transition-[border-color_0.2s] focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] focus:after:absolute focus:after:z-[1] focus:after:block focus:after:h-[0.875rem] focus:after:w-[0.875rem] focus:after:rounded-[0.125rem] focus:after:content-[''] checked:focus:before:scale-100 checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:after:-mt-px checked:focus:after:ml-[0.25rem] checked:focus:after:h-[0.8125rem] checked:focus:after:w-[0.375rem] checked:focus:after:rotate-45 checked:focus:after:rounded-none checked:focus:after:border-[0.125rem] checked:focus:after:border-l-0 checked:focus:after:border-t-0 checked:focus:after:border-solid checked:focus:after:border-white checked:focus:after:bg-transparent dark:checked:border-primary dark:checked:bg-primary dark:focus:before:shadow-[0px_0px_0px_13px_rgba(255,255,255,0.4)] dark:checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca]"
                   type="checkbox"
                   value=""
-                  id="exampleCheck2"
+                  id="example"
                 />
                 <label
                   className="inline-block pl-[0.15rem] hover:cursor-pointer"
@@ -134,22 +207,22 @@ function Login() {
 
             <div className="text-center lg:text-left">
               <button
-                type="button"
+                type="submit"
                 className="inline-block bg-[#1463c2] hover:bg-[#4b8dde] rounded bg-primary px-7 pb-2.5 pt-3 text-sm font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out  hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
                 data-te-ripple-init
                 data-te-ripple-color="light"
               >
-                <Link to="/">Login</Link>
+                Login
               </button>
 
               <p className="mb-0 mt-2 pt-1 text-sm font-semibold">
-                Don't have an account?
-                <a
-                  href="#!"
+                Don't have an account? &nbsp;{" "}
+                <Link
+                  to="/register"
                   className="text-[#b63e3e] transition duration-150 ease-in-out hover:text-danger-600 focus:text-danger-600 active:text-danger-700 hover:text-[#e81414]"
                 >
-                  &nbsp; <Link to="/register">Register</Link>
-                </a>
+                  Register
+                </Link>
               </p>
             </div>
           </form>

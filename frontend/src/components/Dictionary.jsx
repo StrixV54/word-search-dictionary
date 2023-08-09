@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import axios from "axios";
 import Results from "./Results.jsx";
-import { getLocalHostURL } from "../utils/helper.jsx";
+import { axiosLocal } from "../utils/helper.jsx";
+import { useSelector } from "react-redux";
 
 export default function Dictionary(props) {
   let [keyword, setKeyword] = useState(props.text);
@@ -19,12 +19,17 @@ export default function Dictionary(props) {
     Search();
   }, []);
 
+  const { token } = useSelector((state) => state.auth.user);
+
   const Search = (event) => {
     event?.preventDefault();
-    let apiUrl = `${getLocalHostURL}/dict/${keyword}`;
     setLoading(true);
-    axios
-      .get(apiUrl, { headers: { "Content-Type": "" } })
+    axiosLocal
+      .get(`/dict/${keyword}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((res) => {
         setLoading(false);
         setErrorOccured({ error: false, msg: null });
