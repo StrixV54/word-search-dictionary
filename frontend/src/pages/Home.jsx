@@ -27,8 +27,8 @@ function Home() {
   const token = user?.token;
 
   useEffect(() => {
-    console.log("home");
-    console.log(user);
+    // console.log("home");
+    // console.log(user);
     !user && navigate("/login");
 
     load();
@@ -110,9 +110,9 @@ function Home() {
 
   // const myStyle = {
   //   backgroundImage: `url(${isDarkMode ? backgroundDark : backgroundLight})`,
-  //   height: "100vh",
-  //   backgroundSize: "cover",
-  //   backgroundRepeat: "no-repeat",
+  //   height: "100vh", h-screen
+  //   backgroundSize: "cover", bg-cover
+  //   backgroundRepeat: "no-repeat", bg-no-repeat
   // };
 
   return (
