@@ -24,6 +24,9 @@ app.use(cors());
 app.use(errorHandler);
 
 /* ROUTES */
+app.get("/", (req, res) => {
+  res.send("Hello World");
+});
 app.use("/api/", appRoute);
 app.use("/api/user/", userRoute);
 
