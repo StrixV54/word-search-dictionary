@@ -3,7 +3,7 @@
   "name": "wordnote-vercel-app",
   "builds": [
     {
-      "src": "script.js",
+      "src": "server.js",
       "use": "@vercel/node"
     }
   ],
