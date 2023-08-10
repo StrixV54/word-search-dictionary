@@ -1,13 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
-import SideLoginImage from "../assets/Prototyping.svg";
+import WhiteModeApp from "../assets/white-dx.png";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import actions from "../reducer/actions";
-import { axiosLocal } from "../utils/helper";
+import { axiosLocal, useProgressiveImage } from "../utils/helper";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import logo from "../assets/note.png";
 import { FcGoogle } from "react-icons/fc";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import SideImage from "../assets/bglogin.jpg";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -50,11 +52,11 @@ function Login() {
       email,
       password,
     };
-    console.log(userData);
+    // console.log(userData);
     const register = async () => {
       try {
         const response = await axiosLocal.post("/user/login", userData);
-        console.log(response);
+        // console.log(response);
         if (response.data) {
           userData.name = response.data.name;
           userData.token = response.data.token;
@@ -66,7 +68,8 @@ function Login() {
         }
         navigate("/");
       } catch (error) {
-        toast.error(error.message);
+        // console.log(error);
+        toast.error(error.response.status === 400 && "Invalid Credentials");
       }
     };
     register();
@@ -98,13 +101,15 @@ function Login() {
         Welcome to WordNoteApp
       </div> */}
       <div className="flex flex-row h-full w-full items-center md:justify-between justify-center text-sm md:text-md">
-        <div className="basis-auto hidden w-min-[300px] sm:block md:w-5/12 lg:w-6/12 bg-[url('./assets/bg-login-dark.jpg')] h-full w-full flex-1 bg-center bg-cover bg-no-repeat">
-          {/* <img
-            src={SideLoginImage}
-            className="p-0 bg-cover bg-no-repeat h-screen"
-            alt="Side Register Image"
-          /> */}
-        </div>
+        {/* <LazyLoadImage
+          className="basis-auto hidden w-min-[300px] sm:block md:w-5/12 lg:w-6/12 bg-[url('./assets/bg-login-dark.jpg')] h-full w-full flex-1 bg-center bg-cover bg-no-repeat"
+          src={SideImage}
+          alt="Side Bar Image"
+        /> */}
+        <div
+          className="basis-auto hidden w-min-[300px] sm:block md:w-5/12 lg:w-6/12 h-full w-full flex-1 bg-center bg-cover bg-no-repeat bg-slate-900 md:flex items-center justify-center relative"
+          style={{ backgroundImage: `url(${useProgressiveImage(SideImage)})` }}
+        ></div>
 
         <div className="h-full flex items-center justify-center min-w-[350px]  bg-[#ffffff] shadow border-neutral-300 border w-10/12 md:w-5/12 lg:w-5/12 xl:w-5/12 relative">
           <div className="flex px-3 py-2 rounded-lg mx-1 mt-1 absolute top-0 left-0">
@@ -213,7 +218,7 @@ function Login() {
             <div className="text-center lg:text-left">
               <button
                 type="submit"
-                className="inline-block bg-[#1463c2] hover:bg-[#4b8dde] w-full rounded bg-primary px-7 pb-2.5 pt-3 text-sm font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out  hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
+                className="inline-block bg-[#1463c2] hover:bg-[#4b8dde] w-full rounded bg-primary px-7 pb-2.5 pt-3 text-sm font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out "
               >
                 Login
               </button>

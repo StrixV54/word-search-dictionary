@@ -1,7 +1,7 @@
 import actions from "./actions.jsx";
 
 const user = JSON.parse(localStorage.getItem("user"));
-console.log(user);
+// console.log(user);
 
 const initialState = {
   user: user ? user : null,

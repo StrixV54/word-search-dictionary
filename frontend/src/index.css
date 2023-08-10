@@ -63,3 +63,15 @@ body {
     max-width: full;
   }
 }
+
+.zaxis {
+  height: 300px;
+  transform: perspective(500px) rotateY(30deg) rotateX(10deg);
+  /* translate: 30px; */
+}
+
+.zaxiss:hover {
+  height: 300px;
+  transition: cubic-bezier(0.895, 0.03, 0.685, 0.22) 0.2s;
+  transform: perspective(500px) rotateY(20deg) rotateX(0deg) translate(-20px);
+}

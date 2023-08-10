@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import SideRegisterImage from "../assets/Notes-pana.svg";
-import { axiosLocal } from "../utils/helper";
+import { axiosLocal, useProgressiveImage } from "../utils/helper";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import actions from "../reducer/actions";
@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import logo from "../assets/note.png";
 import { FcGoogle } from "react-icons/fc";
+import SideImage from "../assets/bglogin.jpg";
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -88,7 +89,10 @@ function Register() {
         theme="light"
       />
       <div className="flex flex-row h-full w-full items-center md:justify-between justify-center">
-        <div className="basis-auto hidden w-min-[300px] sm:block md:w-5/12 lg:w-6/12 bg-[url('./assets/bg-login.jpg')] h-full w-full flex-1 bg-center bg-cover bg-no-repeat">
+        <div
+          className="basis-auto hidden w-min-[300px] sm:block md:w-5/12 lg:w-6/12 h-full w-full flex-1 bg-center bg-cover bg-no-repeat bg-slate-900"
+          style={{ backgroundImage: `url(${useProgressiveImage(SideImage)})` }}
+        >
           {/* <img
             src={SideLoginImage}
             className="p-0 bg-cover bg-no-repeat h-screen"
@@ -236,9 +240,7 @@ function Register() {
 
             <div className="text-center lg:text-left">
               <button
-                className="inline-block bg-[#1463c2] hover:bg-[#4b8dde] rounded bg-primary px-7 pb-2.5 pt-3 text-sm font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out  hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
-                data-te-ripple-init
-                data-te-ripple-color="light"
+                className="inline-block bg-[#1463c2] hover:bg-[#4b8dde] rounded bg-primary px-7 pb-2.5 pt-3 text-sm font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out w-full"
                 type="submit"
               >
                 Sign Up
