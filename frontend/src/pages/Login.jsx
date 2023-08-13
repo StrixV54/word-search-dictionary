@@ -22,9 +22,7 @@ function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { user, isError, message } = useSelector(
-    (state) => state.auth,
-  );
+  const { user, isError, message } = useSelector((state) => state.auth);
 
   useEffect(() => {
     // console.log("login");
@@ -107,7 +105,7 @@ function Login() {
               <img src={logo} className="h-8 w-8" />
             </span>
             <h1 className="text-[1.2rem] md:text-[1.4rem] font-kalam font-semibold text-slate-700 px-4 pt-2 relative">
-              Word Search Dictionary
+              Word Note Dictionary
               <span className="font font-poppins absolute text-[0.6rem] bottom-0 right-0 -translate-x-6 translate-y-2">
                 -- Developed by Shrikant
               </span>

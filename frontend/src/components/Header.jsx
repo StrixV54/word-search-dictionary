@@ -31,7 +31,7 @@ export default function Header() {
             <img src={logo} className="md:h-10 md:w-10 h-8 w-8" />
           </span>
           <h1 className="text-[1.1rem] md:text-[1.8rem] font-kalam font-semibold text-slate-700 dark:text-gray-400 px-4 pt-2">
-            Word Search Dictionary
+            Word Note Dictionary
           </h1>
         </div>
         <div className="flex flex-row items-center gap-4">
