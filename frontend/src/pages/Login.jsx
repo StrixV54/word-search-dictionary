@@ -80,6 +80,7 @@ function Login() {
     // });
     eve.email = "goody@gmail.com";
     eve.password = "test123";
+    toast.info("Login Successful..Please wait");
     onSubmit(eve);
   };
 
