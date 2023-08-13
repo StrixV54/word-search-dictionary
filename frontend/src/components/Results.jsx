@@ -18,7 +18,11 @@ export default function Results(props) {
                   </span>
                   <br />
                   <strong>Website: </strong>
-                  <em className="text-[#1b4295] dark:text-[#2057ce]">{defination.url}</em>
+                  <em className="text-[#1b4295] dark:text-[#2057ce]">
+                    <a href={defination.url} rel="noreferrer" target="_blank">
+                      {defination.url}
+                    </a>
+                  </em>
                 </p>
               </div>
             );
