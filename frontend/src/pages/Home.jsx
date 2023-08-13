@@ -15,7 +15,7 @@ function Home() {
   // const [isDarkMode, handleToggle] = useContext(SwitchContext);
   // const noteData = useSelector((state) => state.notebox.noteList);
   // const tabData = useSelector((state) => state.sidetab.tabList);
-  // const activeTab = useSelector((state) => state.sidetab.activeTab);
+  const activeTab = useSelector((state) => state.sidetab.activeTab);
   const activeDeleted = useSelector((state) => state.sidetab.isActiveDeleted);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -29,27 +29,34 @@ function Home() {
   useEffect(() => {
     // console.log("home");
     // console.log(user);
-    !user && navigate("/login");
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    // console.log("user", user);
+    const controller = new AbortController();
 
-    load();
+    const load = async () => {
+      const data = await getTabs(controller);
+      if (data && data.length !== 0) {
+        dispatch({ type: actions.FETCH_TABS, newList: [...data] });
+        // console.log("TabD", data);
+        const currentTab = activeTab || data[0]?.tabname;
+        // console.log("Current", currentTab);
+        dispatch({ type: actions.ACTIVE_TAB, text: currentTab });
+        const data1 = await getNotes(currentTab, controller);
+        const note = data1?.note;
+        if (note) dispatch({ type: actions.FETCH_ITEMS, newList: [...note] });
+      }
+    };
+    load(controller);
+
     if (activeDeleted) dispatch({ type: actions.RESETACTIVE });
     return () => {
+      controller.abort();
       // dispatch({ type: actions.RESET });
     };
-  }, [user, activeDeleted]);
-
-  const load = async () => {
-    const data = await getTabs();
-    if (data || data.length !== 0) {
-      dispatch({ type: actions.FETCH_TABS, newList: [...data] });
-      // console.log("TabD", data);
-      const currentTab = data[0]?.tabname;
-      // console.log("Current", currentTab);
-      dispatch({ type: actions.ACTIVE_TAB, text: currentTab });
-      const { note } = await getNotes(currentTab);
-      if (note) dispatch({ type: actions.FETCH_ITEMS, newList: [...note] });
-    }
-  };
+  }, [user, activeTab, activeDeleted]);
 
   const [windowSize, setWindowSize] = useState(window.innerWidth);
   const [sidebarToggle, setSidebarToggle] = useState(false);
@@ -80,9 +87,10 @@ function Home() {
   //   load();
   // }, []);
 
-  const getTabs = async () => {
+  const getTabs = async (controller) => {
     try {
       const { data } = await axiosLocal.get(`/gettabs`, {
+        signal: controller.signal,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -90,13 +98,15 @@ function Home() {
       // console.log(data);
       return data;
     } catch (error) {
-      console.log("Error in Fetching Data");
+      !error.message === "canceled" &&
+        console.log("Error in Fetching Data ", error.message);
     }
   };
 
-  const getNotes = async (tabName) => {
+  const getNotes = async (tabName, controller) => {
     try {
       const { data } = await axiosLocal.get(`/getnotes/${tabName}`, {
+        signal: controller.signal,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -104,7 +114,8 @@ function Home() {
       // console.log(data);
       return data;
     } catch (error) {
-      console.log("Error in Fetching Data");
+      !error.message === "canceled" &&
+        console.log("Error in Fetching Data ", error.message);
     }
   };
 

@@ -54,7 +54,7 @@ export default function Notebar(props) {
           },
         },
       );
-      console.log(body);
+      // console.log(body);
       // return data;
     } catch (error) {
       console.log("Error in connecting and saving Data");

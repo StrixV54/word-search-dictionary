@@ -9,7 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import logo from "../assets/note.png";
 import { FcGoogle } from "react-icons/fc";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import SideImage from "../assets/bglogin.jpg";
+import SideImage from "../assets/bgloginreg.jpg";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -22,7 +22,7 @@ function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { user, isError, isSuccess, message } = useSelector(
+  const { user, isError, message } = useSelector(
     (state) => state.auth,
   );
 
@@ -43,14 +43,14 @@ function Login() {
 
   const onSubmit = (e) => {
     e?.preventDefault();
-    if (!email || !password) {
+    // console.log(e);
+    if (!e.email && (!email || !password)) {
       toast.error("Please enter Email/Password");
       return;
     }
-
     const userData = {
-      email,
-      password,
+      email: e.email ? e.email : email,
+      password: e.password ? e.password : password,
     };
     // console.log(userData);
     const register = async () => {
@@ -61,7 +61,7 @@ function Login() {
           userData.name = response.data.name;
           userData.token = response.data.token;
           localStorage.setItem("user", JSON.stringify(response.data));
-          console.log(userData);
+          // console.log(userData);
           dispatch({ type: actions.AUTHENTICATED, user: userData });
         } else {
           dispatch({ type: actions.AUTHERROR, message: response.data });
@@ -75,11 +75,14 @@ function Login() {
     register();
   };
 
-  const guestUser = () => {
-    setFormData({
-      email: "goody@gmail.com",
-      password: "test123",
-    });
+  const guestUser = (eve) => {
+    // setFormData({
+    //   email: "goody@gmail.com",
+    //   password: "test123",
+    // });
+    eve.email = "goody@gmail.com";
+    eve.password = "test123";
+    onSubmit(eve);
   };
 
   return (

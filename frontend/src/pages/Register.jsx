@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import logo from "../assets/note.png";
 import { FcGoogle } from "react-icons/fc";
-import SideImage from "../assets/bglogin.jpg";
+import SideImage from "../assets/bgloginreg.jpg";
 
 function Register() {
   const [formData, setFormData] = useState({

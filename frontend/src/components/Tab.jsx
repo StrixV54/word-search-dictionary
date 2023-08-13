@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import actions from "../reducer/actions.jsx";
 import { axiosLocal } from "../utils/helper.jsx";
+import { toast } from "react-toastify";
 
 /* eslint-disable react/prop-types */
 export default function Tab(props) {
@@ -15,43 +16,16 @@ export default function Tab(props) {
   const deleteCurrentTab = (id) => {
     dispatch({ type: actions.REMOVE_TAB, id: id });
     deleteTab(id);
-    console.log(tabData);
+    // console.log(tabData);
     // dispatch({ type: actions.FETCH_ITEMS, newList: [] });
   };
 
   const toggleTab = (input) => {
     const load = async () => {
-      if (input?.length === 0) console.log("Empty tab");
+      if (input?.length === 0) toast.error("Empty tab");
       dispatch({ type: actions.ACTIVE_TAB, text: text });
-      const data = await getNotes(text);
-      console.log(data);
-      if (data) {
-        dispatch({ type: actions.FETCH_ITEMS, newList: [...data.note] });
-      } else {
-        dispatch({ type: actions.FETCH_ITEMS, newList: [] });
-      }
     };
     load();
-  };
-
-  const getNotes = async (tabName) => {
-    try {
-      const { data } = await axiosLocal.get(`/getnotes/${tabName}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log(data);
-      const dat = await axiosLocal.get(`/getnotes/${tabName}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log(dat.data);
-      return data;
-    } catch (error) {
-      console.log("Error in connecting and fetching Data");
-    }
   };
 
   const deleteTab = async (id) => {
@@ -64,7 +38,7 @@ export default function Tab(props) {
       console.log(data);
       return data;
     } catch (error) {
-      console.log("Error in connecting and fetching Data");
+      console.log("Error in connecting and fetching Data ", error.message);
     }
   };
 

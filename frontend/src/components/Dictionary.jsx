@@ -11,7 +11,7 @@ export default function Dictionary(props) {
   let [errorOccured, setErrorOccured] = useState({ error: false, msg: null });
 
   const handleDictionaryResponse = (response) => {
-    console.log(response);
+    // console.log(response);
     setResults(response);
   };
 
