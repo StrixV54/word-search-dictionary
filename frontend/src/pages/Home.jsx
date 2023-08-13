@@ -41,14 +41,17 @@ function Home() {
     const load = async () => {
       const data = await getTabs(controller);
       if (data && data.length !== 0) {
-        dispatch({ type: actions.FETCH_TABS, newList: [...data] });
+        dispatch({ type: actions.FETCH_TABS, newList: data });
         // console.log("TabD", data);
         const currentTab = activeTab || data[0]?.tabname;
         // console.log("Current", currentTab);
         dispatch({ type: actions.ACTIVE_TAB, text: currentTab });
         const data1 = await getNotes(currentTab, controller);
+        dispatch({ type: actions.ISLOADED });
         const note = data1?.note;
-        if (note) dispatch({ type: actions.FETCH_ITEMS, newList: [...note] });
+        if (note) {
+          dispatch({ type: actions.FETCH_ITEMS, newList: note });
+        }
       }
     };
     load(controller);

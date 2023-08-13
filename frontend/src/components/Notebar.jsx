@@ -18,6 +18,7 @@ export default function Notebar(props) {
   const [isDarkMode, toggleMode] = useContext(SwitchContext);
   const user = useSelector((state) => state.auth.user);
   const token = user?.token;
+  const isLoading = useSelector((state) => state.sidetab.isLoading);
 
   const saveHandler = () => {
     const inputValue = inputValueRef.current.value;
@@ -121,10 +122,10 @@ export default function Notebar(props) {
         </button>
       </div>
       {/* <div className="h-1 dark:bg-white/10 bg-black/10 rounded-lg md:block w-full"></div> */}
+
       {noteData.length === 0 && (
         <div className="w-full text-center p-4 text-black dark:text-white">
-          {" "}
-          No Notes Present
+          {isLoading ? "Please Wait... Loading Notes" : "No Notes Present"}
         </div>
       )}
       <div className="m-2 py-2 grid grid-flow-row md:grid-cols-3 grid-cols-2 grid-rows-2 gap-4 ">

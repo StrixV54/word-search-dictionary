@@ -4,6 +4,7 @@ const initialState = {
   tabList: [],
   activeTab: null,
   isActiveDeleted: false,
+  isLoading: false,
 };
 
 const reducerTab = (state = initialState, action) => {
@@ -31,6 +32,12 @@ const reducerTab = (state = initialState, action) => {
     }
     case actions.RESETACTIVE: {
       return { ...state, isActiveDeleted: false };
+    }
+    case actions.ISLOADING: {
+      return { ...state, isLoading: true };
+    }
+    case actions.ISLOADED: {
+      return { ...state, isLoading: false };
     }
     default:
       return state;

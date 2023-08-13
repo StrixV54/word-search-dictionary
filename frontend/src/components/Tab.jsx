@@ -9,6 +9,7 @@ export default function Tab(props) {
 
   const dispatch = useDispatch();
   const isActive = text === useSelector((state) => state.sidetab.activeTab);
+  const isLoading = useSelector((state) => state.sidetab.isLoading);
   const user = useSelector((state) => state.auth.user);
   const token = user?.token;
   const tabData = useSelector((state) => state.sidetab.tabList);
@@ -22,10 +23,12 @@ export default function Tab(props) {
 
   const toggleTab = (input) => {
     // console.log("first");
-    toast.info("Please wait...Fetching Tab Data");
+    // toast.info("Please wait...Fetching Tab Data");
     const load = async () => {
       if (input?.length === 0) toast.error("Empty tab");
       dispatch({ type: actions.ACTIVE_TAB, text: text });
+      dispatch({ type: actions.ISLOADING });
+      dispatch({ type: actions.FETCH_ITEMS, newList: [] });
     };
     load();
   };
