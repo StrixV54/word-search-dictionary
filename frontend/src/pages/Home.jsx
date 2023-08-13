@@ -8,6 +8,8 @@ import { SwitchContext } from "../context/SwitchTheme.jsx";
 import actions from "../reducer/actions.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrentTime, axiosLocal, uuid } from "../utils/helper.jsx";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -128,6 +130,19 @@ function Home() {
 
   return (
     <div className="App relative h-full w-full flex flex-col bg-[#f9f9f9] dark:bg-[#1a1c21]">
+      <ToastContainer
+        className={"text-sm"}
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Header />
       <div className="flex w-full h-full f-edge overflow-hidden relative">
         <Sidebar

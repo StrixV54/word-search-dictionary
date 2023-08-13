@@ -87,19 +87,6 @@ function Login() {
 
   return (
     <div className="h-full bg-[#e9e9e9] text-black flex items-center justify-between">
-      <ToastContainer
-        className={"text-sm"}
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
       {/* <div className="w-full pt-12 md:pt-20 pb-4 md:pb-8 text-center text-[25px] md:text-[38px] lg:text-[45px] font-Josepfin">
         Welcome to WordNoteApp
       </div> */}

@@ -21,6 +21,8 @@ export default function Tab(props) {
   };
 
   const toggleTab = (input) => {
+    // console.log("first");
+    toast.info("Please wait...Fetching Tab Data");
     const load = async () => {
       if (input?.length === 0) toast.error("Empty tab");
       dispatch({ type: actions.ACTIVE_TAB, text: text });
