@@ -79,7 +79,7 @@ function Login() {
     //   email: "goody@gmail.com",
     //   password: "test123",
     // });
-    toast.info("Login Successful..Please wait");
+    toast.info("Logging..Please wait");
     eve.email = "goody@gmail.com";
     eve.password = "test123";
     onSubmit(eve);
