@@ -67,7 +67,8 @@ function Login() {
         navigate("/");
       } catch (error) {
         // console.log(error);
-        toast.error(error.response.status === 400 && "Invalid Credentials");
+        error.code === "ERR_NETWORK" && toast.error("Network Error");
+        error.response.status === 400 && toast.error("Invalid Credentials");
       }
     };
     register();
@@ -78,14 +79,27 @@ function Login() {
     //   email: "goody@gmail.com",
     //   password: "test123",
     // });
+    toast.info("Login Successful..Please wait");
     eve.email = "goody@gmail.com";
     eve.password = "test123";
-    toast.info("Login Successful..Please wait");
     onSubmit(eve);
   };
 
   return (
     <div className="h-full bg-[#e9e9e9] text-black flex items-center justify-between">
+      <ToastContainer
+        className={"text-sm"}
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       {/* <div className="w-full pt-12 md:pt-20 pb-4 md:pb-8 text-center text-[25px] md:text-[38px] lg:text-[45px] font-Josepfin">
         Welcome to WordNoteApp
       </div> */}
