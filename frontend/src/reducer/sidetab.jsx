@@ -4,7 +4,7 @@ const initialState = {
   tabList: [],
   activeTab: null,
   isActiveDeleted: false,
-  isLoading: false,
+  isLoading: true,
 };
 
 const reducerTab = (state = initialState, action) => {

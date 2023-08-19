@@ -39,6 +39,7 @@ function Home() {
     const controller = new AbortController();
 
     const load = async () => {
+      dispatch({ type: actions.ISLOADING });
       const data = await getTabs(controller);
       if (data && data.length !== 0) {
         dispatch({ type: actions.FETCH_TABS, newList: data });
@@ -46,18 +47,21 @@ function Home() {
         const currentTab = activeTab || data[0]?.tabname;
         // console.log("Current", currentTab);
         dispatch({ type: actions.ACTIVE_TAB, text: currentTab });
+
         const data1 = await getNotes(currentTab, controller);
-        dispatch({ type: actions.ISLOADED });
         const note = data1?.note;
         if (note) {
           dispatch({ type: actions.FETCH_ITEMS, newList: note });
         }
+        dispatch({ type: actions.ISLOADED });
       }
     };
     load(controller);
 
     if (activeDeleted) dispatch({ type: actions.RESETACTIVE });
+
     return () => {
+      dispatch({ type: actions.ISLOADED });
       controller.abort();
       // dispatch({ type: actions.RESET });
     };

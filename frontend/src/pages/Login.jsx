@@ -8,14 +8,16 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import logo from "../assets/note.png";
 import { FcGoogle } from "react-icons/fc";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import SideImage from "../assets/bgloginreg.jpg";
+import Loader from "../components/Loader";
 
 function Login() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+  // console.log("Main ", isLoading);
 
   const { email, password } = formData;
 
@@ -25,8 +27,6 @@ function Login() {
   const { user, isError, message } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    // console.log("login");
-    // console.log(user);
     isError && toast.error(message);
     // console.log("tt", isSuccess, user);
     user && navigate("/");
@@ -42,10 +42,11 @@ function Login() {
   const onSubmit = (e) => {
     e?.preventDefault();
     // console.log(e);
-    if (!e.email && (!email || !password)) {
-      toast.error("Please enter Email/Password");
-      return;
-    }
+    // if (!e.email && (!email || !password)) {
+    //   toast.error("Please enter Email/Password");
+    //   return;
+    // }
+    setIsLoading(true);
     const userData = {
       email: e.email ? e.email : email,
       password: e.password ? e.password : password,
@@ -67,26 +68,24 @@ function Login() {
         navigate("/");
       } catch (error) {
         // console.log(error);
-        error.code === "ERR_NETWORK" && toast.error("Network Error");
-        error.response.status === 400 && toast.error("Invalid Credentials");
+        error?.code === "ERR_NETWORK" && toast.error("Network Error");
+        error?.response?.status === 400 && toast.error("Invalid Credentials");
+      } finally {
+        setIsLoading(false);
       }
     };
     register();
   };
 
   const guestUser = (eve) => {
-    // setFormData({
-    //   email: "goody@gmail.com",
-    //   password: "test123",
-    // });
-    toast.info("Logging..Please wait");
     eve.email = "goody@gmail.com";
     eve.password = "test123";
     onSubmit(eve);
   };
 
   return (
-    <div className="h-full bg-[#e9e9e9] text-black flex items-center justify-between">
+    <div className="h-full bg-[#e9e9e9] text-black flex items-center justify-between relative">
+      {/* {console.log("Returned ", isLoading)} */}
       <ToastContainer
         className={"text-sm"}
         position="top-right"
@@ -100,6 +99,7 @@ function Login() {
         pauseOnHover
         theme="light"
       />
+      {isLoading && <Loader />}
       {/* <div className="w-full pt-12 md:pt-20 pb-4 md:pb-8 text-center text-[25px] md:text-[38px] lg:text-[45px] font-Josepfin">
         Welcome to WordNoteApp
       </div> */}

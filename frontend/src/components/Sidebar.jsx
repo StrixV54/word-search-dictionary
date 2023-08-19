@@ -33,36 +33,40 @@ export default function Sidebar(props) {
       inputTabRef.current.value = "";
       dispatch({ type: actions.ACTIVE_TAB, text: input });
       setToggle(false);
-      toggleTab(input);
+      // toggleTab(input);
     }
   };
 
-  const toggleTab = (text) => {
-    const load = async () => {
-      dispatch({ type: actions.ACTIVE_TAB, text: text });
-      const data = await getNotes(text);
-      if (data) {
-        dispatch({ type: actions.FETCH_ITEMS, newList: [...data.note] });
-      } else {
-        dispatch({ type: actions.FETCH_ITEMS, newList: [] });
-      }
-    };
-    load();
-  };
+  // const toggleTab = (text) => {
+  //   const load = async () => {
+  //     // dispatch({ type: actions.ISLOADING });
 
-  const getNotes = async (tabName) => {
-    try {
-      const { data } = await axiosLocal.get(`/getnotes/${tabName}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      // console.log(data);
-      return data;
-    } catch (error) {
-      console.log("Error in connecting and fetching Data");
-    }
-  };
+  //     dispatch({ type: actions.ACTIVE_TAB, text: text });
+  //     const data = await getNotes(text);
+  //     if (data) {
+  //       dispatch({ type: actions.FETCH_ITEMS, newList: [...data.note] });
+  //     } else {
+  //       dispatch({ type: actions.FETCH_ITEMS, newList: [] });
+  //     }
+
+  //     // dispatch({ type: actions.ISLOADED });
+  //   };
+  //   load();
+  // };
+
+  // const getNotes = async (tabName) => {
+  //   try {
+  //     const { data } = await axiosLocal.get(`/getnotes/${tabName}`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     // console.log(data);
+  //     return data;
+  //   } catch (error) {
+  //     console.log("Error in connecting and fetching Data");
+  //   }
+  // };
 
   const saveTab = async (id, time, color, tabName) => {
     try {

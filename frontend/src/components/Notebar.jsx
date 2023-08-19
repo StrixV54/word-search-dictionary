@@ -23,8 +23,6 @@ export default function Notebar(props) {
   const saveHandler = () => {
     const inputValue = inputValueRef.current.value;
     if (inputValue.length != 0) {
-      // console.log(inputValue);
-      // saveNoteHandler(inputValue);
       const id = uuid();
       saveNote(id, inputValue, getCurrentTime, "Red", activeTab);
       dispatch({
